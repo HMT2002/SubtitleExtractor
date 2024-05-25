@@ -58,16 +58,20 @@ ap.add_argument("-i","--image",
 ap.add_argument("-f","--folder",
                 required=True,
                 help="Path to the folder")
+ap.add_argument("-sub","--subname",
+                required=True,
+                help="Subtitle file name")
 ap.add_argument("-p","--pre_processor",
                 default="thresh", 
                 help="the preprocessor usage")
 args=vars(ap.parse_args())
 single_image=args["image"]
 folder_image=args["folder"]
-# init easyocr
-# reader = easyocr.Reader(['vi']) # this needs to run only once to load the model into memory
-reader = easyocr.Reader(['vi','en'])
+sub_name=args["subname"]
 
+# init easyocr
+reader = easyocr.Reader(['vi']) # this needs to run only once to load the model into memory
+# reader = easyocr.Reader(['vi','en'])
 step=0
 index=1
 #read files in folder
@@ -76,7 +80,7 @@ path = str(pathlib.Path().resolve())+'\\'+folder_image
 dir_list = os.listdir(path)
 # print( "Files and directories in '", path, "' :")
 # prints all files
-re = open("sub.srt", "w")
+re = open(sub_name+".srt", "w")
 re.write("")
 re.close()
 for file in dir_list:
@@ -101,7 +105,7 @@ for file in dir_list:
   if len(result)>0:
     if len(result[0])>1:
       sub=format_a_line(result[0][1],step,step+500,index)
-      with open("sub.srt", 'a+', encoding="utf-8") as f: #this use to append
+      with open(sub_name+".srt", 'a+', encoding="utf-8") as f: #this use to append
       #with open("sub.srt", 'w', encoding="utf-8") as f: #this use to overwrite
         f.write(sub)
         index=index+1

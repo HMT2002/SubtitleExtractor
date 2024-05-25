@@ -3,6 +3,7 @@ using AForge.Imaging.Filters;
 using Emgu.CV;
 using Emgu.CV.ImgHash;
 using Emgu.CV.Structure;
+using FFMpegCore;
 using LibVLCSharp.Shared;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,7 @@ namespace SubtitleExtractor
 {
     public partial class Form1 : Form
     {
+
         public static int PROCESS_MAXIMUM = 1000;
         public static int PROCESS_STEP = 10;
         [DllImport("kernel32.dll")]
@@ -41,11 +43,13 @@ namespace SubtitleExtractor
             SetConsoleOutputCP(65001);
             //Console.OutputEncoding = Encoding.UTF8;
             //Console.InputEncoding = System.Text.Encoding.UTF8;
+            GlobalFFOptions.Configure(new FFOptions { BinaryFolder = @"D:\ffmpeg-app\", TemporaryFilesFolder = Environment.CurrentDirectory + "/tmp" });
         }
-        string FFMPEG_PATH = "../../ffmpeg.exe";
+        string FFMPEG_PATH = @"D:\ffmpeg-app\ffmpeg.exe";
         public Random random;
         string output_filename = "";
         string filepath = "";
+
 
         public string RandomString(int length)
         {
@@ -86,7 +90,7 @@ namespace SubtitleExtractor
 
                 process.Start();
 
-                process.WaitForExit();
+                //process.WaitForExit();
 
                 textBoxCropFolder.Text = output_filename;
                 richTextBoxStatus.Text += "Finish extract!\n";
@@ -96,18 +100,13 @@ namespace SubtitleExtractor
                 MessageBox.Show(ex.Message);
             }
         }
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-
-        }
         private void OpenScreenshotFile()
         {
-            if (!File.Exists(FFMPEG_PATH))
-            {
-                MessageBox.Show("Cannot find ffmpeg.exe.");
-                return;
-            }
+            //if (!File.Exists(FFMPEG_PATH))
+            //{
+            //    MessageBox.Show("Cannot find ffmpeg.exe.");
+            //    return;
+            //}
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
                 dialog.Multiselect = false;
@@ -115,15 +114,10 @@ namespace SubtitleExtractor
 
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
-
-                    //foreach (string filename in dialog.FileNames)
-                    //{
-                    //    string ext = Path.GetExtension(dialog.FileName);
-                    //    ExtractScreenshot(filename, 2);
-                    //}
                     string filename = dialog.FileName;
                     this.filepath = filename;
                     textBoxExtractFolder.Text = filename;
+
                 }
             }
         }
@@ -139,7 +133,7 @@ namespace SubtitleExtractor
             {
                 System.IO.Directory.CreateDirectory(folderpath);
             }
-            string strParam = "ffmpeg -i \"" + filename + "\" -vf fps=" + shotNumberPerSecond + " \"" + folderpath + "/out%04d.png\"";
+            string strParam = FFMPEG_PATH+" -i \"" + filename + "\" -vf fps=" + shotNumberPerSecond + " \"" + folderpath + "/out%05d.png\"";
             //if (MessageBox.Show("", strParam, MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK)
             //{
             //    Clipboard.SetText(strParam);
@@ -149,12 +143,11 @@ namespace SubtitleExtractor
 
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        public void ExtractScreenshotFFMPEGCore(string inputfilename, string outputfolder, int shotNumberPerSecond)
         {
-            //OCRPic(System.Windows.Forms.Application.StartupPath + @"\" + textBoxOCR.Text);
-            StartOCRProc(textBoxOCR.Text);
 
-            //backgroundWorker1.RunWorkerAsync();//start worker
+            FFMpeg.Snapshot(inputfilename, outputfolder, new Size(200, 400), TimeSpan.FromSeconds(1));
+
 
         }
 
@@ -167,7 +160,7 @@ namespace SubtitleExtractor
                     ProcessStartInfo start = new ProcessStartInfo();
                     start.WorkingDirectory = Environment.CurrentDirectory;
                     start.FileName = "cmd.exe";
-                    start.Arguments = @"/k chcp 65001 & @echo off & python -u ../../pyocr.py --folder " + output_folder + @" --image out0064.png";
+                    start.Arguments = @"/k chcp 65001 & @echo off & python -u ../../pyocr.py --folder " + output_folder + @" --image out0064.png --subname " + output_folder;
                     start.UseShellExecute = false;
                     start.RedirectStandardOutput = true;
                     start.RedirectStandardError = true;
@@ -183,6 +176,7 @@ namespace SubtitleExtractor
                         process.Start();
                         process.BeginErrorReadLine();
                         process.BeginOutputReadLine();
+                        //process.WaitForExit();
 
                         //using (StreamReader reader = process.StandardOutput)
                         //{
@@ -193,16 +187,9 @@ namespace SubtitleExtractor
                         //    richTextBoxStatus.Text += myString + "\n";
 
                         //}
+
+
                     }
-
-
-                    //Process process = new Process() { StartInfo = start ,EnableRaisingEvents = true};
-                    //process.ErrorDataReceived += Process_OutputDataReceived;
-                    //process.OutputDataReceived += Process_OutputDataReceived;
-                    //process.Start();
-                    //process.BeginErrorReadLine();
-                    //process.BeginOutputReadLine();
-                    //process.WaitForExit();
                     Console.Read();
 
                 });
@@ -282,15 +269,64 @@ namespace SubtitleExtractor
             }
 
         }
-        public void CropPic(string input_filepath, string output_filepath)
+        public void CropPic(string input_filepath, string output_filepath, int index)
         {
             Mat img = CvInvoke.Imread(input_filepath, Emgu.CV.CvEnum.ImreadModes.AnyColor);
             richTextBoxStatus.Text += "Height: " + img.Height + "Width: " + img.Width + "\n";
 
-            Rectangle myROI = new Rectangle(0, img.Height - (((img.Height + 1) * 15) / 100), img.Width, (((img.Height + 1) * 15) / 100));
-            Mat cropped_im = new Mat(img, myROI);
-            cropped_im.Save(output_filepath);
+            Rectangle myROI = new Rectangle(0, img.Height - (((img.Height + 1) * 18) / 100), img.Width, (((img.Height + 1) * 18) / 100));
+            Mat cropped_img = new Mat(img, myROI);
+            cropped_img.Save(output_filepath);
+            SwitchImageHighSpeed(cropped_img.ToBitmap(), pictureBoxCrop, 200);
+
+
         }
+        private string OCR(Bitmap b)
+        {
+            string res = "";
+            try
+            {
+                using (var engine = new TesseractEngine("./tessdata", "vie", EngineMode.Default))
+                {
+                    using (var page = engine.Process(b, PageSegMode.Auto))
+                        res = page.GetText();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return res;
+        }
+        public async void SwitchImageHighSpeed(Bitmap bitmap, PictureBox pictureBox, int delayMs)
+        {
+            pictureBox.BackgroundImage = bitmap;
+            pictureBox.Refresh();
+            await Task.Delay(delayMs);//<--Note Task.Delay don't block UI
+        }
+
+        private async void button2_Click(object sender, EventArgs e)
+        {
+            //OCRPic(System.Windows.Forms.Application.StartupPath + @"\" + textBoxOCR.Text);
+            StartOCRProc(textBoxOCR.Text);
+
+            //backgroundWorker1.RunWorkerAsync();//start worker
+
+            //Displaying thôi đừng, out of memory ngay đấy
+            //foreach (FileInfo file in new DirectoryInfo(System.Windows.Forms.Application.StartupPath + @"\" + textBoxOCR.Text).GetFiles())
+            //{
+            //    Bitmap bitmap = new Bitmap(file.FullName);
+            //    // Chuyền thành màu xám
+            //    Grayscale grayFilter = new Grayscale(0.2125, 0.7154, 0.0721);
+            //    Bitmap grImage = grayFilter.Apply(bitmap);
+            //    SISThreshold filter = new SISThreshold();
+            //    // thêm filter 1 lần nữa
+            //    filter.ApplyInPlace(grImage);
+            //    SwitchImageHighSpeed(grImage, pictureBoxOCR, 200);
+            //}
+        }
+
+
         private void button3_Click(object sender, EventArgs e)
         {
             string source_folder = textBoxCropFolder.Text;
@@ -319,10 +355,11 @@ namespace SubtitleExtractor
                 //di.Delete();
                 //Console.WriteLine("The directory was deleted successfully.");
 
-
+                int index = 0;
                 foreach (FileInfo file in new DirectoryInfo(folder_path).GetFiles())
                 {
-                    CropPic(file.FullName, source_folder + @"_cropped\" + file.Name);
+                    CropPic(file.FullName, source_folder + @"_cropped\" + file.Name, index);
+                    index++;
                 }
                 textBoxOCR.Text = source_folder + @"_cropped";
 
@@ -333,23 +370,6 @@ namespace SubtitleExtractor
             }
 
 
-        }
-        private string OCR(Bitmap b)
-        {
-            string res = "";
-            try
-            {
-                using (var engine = new TesseractEngine("./tessdata", "vie", EngineMode.Default))
-                {
-                    using (var page = engine.Process(b, PageSegMode.Auto))
-                        res = page.GetText();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            return res;
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
@@ -648,7 +668,31 @@ namespace SubtitleExtractor
 
         private void toolStripButton7_Click(object sender, EventArgs e)
         {
+
+            string fileID = RandomString(5);
+            string folderpath = Environment.CurrentDirectory + @"\" + fileID;
+            string folder_cropped_path = System.Windows.Forms.Application.StartupPath + @"\" + fileID + @"_cropped";
+            textBoxCropFolder.Text = fileID ;
+            //if (!System.IO.Directory.Exists(folderpath))
+            //{
+            //    System.IO.Directory.CreateDirectory(folderpath);
+            //}
+
+
+            if (!File.Exists(folder_cropped_path))
+            {
+                System.IO.Directory.CreateDirectory(folder_cropped_path);
+            }
+
+
             ExtractScreenshot(textBoxExtractFolder.Text, 2);
+
+
+
+
+            //ExtractScreenshotFFMPEGCore(textBoxExtractFolder.Text, folder_cropped_path, 2);
+
+
 
         }
 

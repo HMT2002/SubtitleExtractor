@@ -59,5 +59,35 @@ namespace SubtitleExtractor.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap crop_edit_interface_snniping_tool_cropping_reduce_64 {
+            get {
+                object obj = ResourceManager.GetObject("crop_edit_interface_snniping_tool_cropping_reduce-64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap document_scanning_QR_code_barcode_OCR_image_scanning__64 {
+            get {
+                object obj = ResourceManager.GetObject("document_scanning_QR_code_barcode_OCR_image_scanning_-64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap x_19_64 {
+            get {
+                object obj = ResourceManager.GetObject("x-19-64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }
