@@ -70,8 +70,8 @@ folder_image=args["folder"]
 sub_name=args["subname"]
 
 # init easyocr
-reader = easyocr.Reader(['vi']) # this needs to run only once to load the model into memory
-# reader = easyocr.Reader(['vi','en'])
+# reader = easyocr.Reader(['vi']) # this needs to run only once to load the model into memory
+reader = easyocr.Reader(['vi','en'])
 step=0
 index=1
 #read files in folder

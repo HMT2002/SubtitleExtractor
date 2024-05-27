@@ -1,11 +1,13 @@
 ﻿using AForge.Imaging;
 using AForge.Imaging.Filters;
 using Emgu.CV;
+using Emgu.CV.Flann;
 using Emgu.CV.ImgHash;
 using Emgu.CV.Structure;
 using FFMpegCore;
 using LibVLCSharp.Shared;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -46,7 +48,7 @@ namespace SubtitleExtractor
             GlobalFFOptions.Configure(new FFOptions { BinaryFolder = @"D:\ffmpeg-app\", TemporaryFilesFolder = Environment.CurrentDirectory + "/tmp" });
         }
         string FFMPEG_PATH = @"D:\ffmpeg-app\ffmpeg.exe";
-        public Random random;
+        public Random random = new Random();
         string output_filename = "";
         string filepath = "";
 
@@ -55,7 +57,6 @@ namespace SubtitleExtractor
         {
 
             string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            random = new Random();
             return new string(Enumerable.Repeat(chars, length)
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
@@ -90,7 +91,7 @@ namespace SubtitleExtractor
 
                 process.Start();
 
-                //process.WaitForExit();
+                process.WaitForExit();
 
                 textBoxCropFolder.Text = output_filename;
                 richTextBoxStatus.Text += "Finish extract!\n";
@@ -133,7 +134,7 @@ namespace SubtitleExtractor
             {
                 System.IO.Directory.CreateDirectory(folderpath);
             }
-            string strParam = FFMPEG_PATH+" -i \"" + filename + "\" -vf fps=" + shotNumberPerSecond + " \"" + folderpath + "/out%05d.png\"";
+            string strParam = FFMPEG_PATH + " -i \"" + filename + "\" -vf fps=" + shotNumberPerSecond + " \"" + folderpath + "/out%05d.png\"";
             //if (MessageBox.Show("", strParam, MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK)
             //{
             //    Clipboard.SetText(strParam);
@@ -209,6 +210,7 @@ namespace SubtitleExtractor
                 Console.WriteLine(e.Data);
                 byte[] bytes = Encoding.Default.GetBytes(e.Data);
                 string myString = Encoding.UTF8.GetString(bytes);
+                //richTextBoxStatus.Text += myString + "\n"+ e.Data + "\n";
                 richTextBoxStatus.Text += myString + "\n";
             }
 
@@ -281,6 +283,113 @@ namespace SubtitleExtractor
 
 
         }
+
+        string displayFile = "";
+        string displayFileName = "";
+
+        public void checkOption()
+        {
+            if (textBoxGrayScaleInput.Text.CompareTo("") == 0)
+            {
+                return;
+            }
+            bool useSISThreshHold = checkBoxThreshhold.Checked;
+            bool useGrayscale = checkBoxGrayscale.Checked;
+            string grayscale_filepath = "";
+
+            if (checkBoxNail.Checked && displayFile.CompareTo("") != 0)
+            {
+                grayscale_filepath = displayFile;
+            }
+            else
+            {
+                DirectoryInfo dir = new DirectoryInfo(textBoxGrayScaleInput.Text);
+                if (!dir.Exists )
+                {
+                    return;
+                }
+                int randomIndex = random.Next(dir.GetFiles().Length - 1);
+                FileInfo file = dir.GetFiles()[randomIndex];
+                labelGrayscaleName.Text = file.Name;
+                grayscale_filepath = file.FullName;
+                displayFile = file.FullName;
+                displayFileName = file.Name;
+            }
+
+            Bitmap bitmap = new Bitmap(grayscale_filepath);
+
+
+            Grayscale grayFilter = new Grayscale(0.2125, 0.7154, 0.0721);
+            if (useGrayscale)
+            {
+                // Chuyền thành màu xám
+                bitmap = grayFilter.Apply(bitmap);
+            }
+            else if (useSISThreshHold)
+            {
+                //Grayscale grayFilter = new Grayscale(0.2125, 0.7154, 0.0721);
+                Bitmap grImage = grayFilter.Apply(bitmap);
+                SISThreshold filter = new SISThreshold();
+                filter.ApplyInPlace(grImage);
+                bitmap = grImage;
+
+            }
+            else if (useGrayscale && useSISThreshHold)
+            {
+                //Grayscale grayFilter = new Grayscale(0.2125, 0.7154, 0.0721);
+                bitmap = grayFilter.Apply(bitmap);
+                //Bitmap grImage = grayFilter.Apply(bitmap);
+                // thêm filter 1 lần nữa
+                //SISThreshold filter = new SISThreshold();
+                //filter.ApplyInPlace(grImage);
+                //bitmap = grImage;
+            }
+            pictureBoxGrayscale.BackgroundImage = bitmap;
+        }
+        private void checkBoxGrayscale_CheckedChanged(object sender, EventArgs e)
+        {
+
+            checkOption();
+        }
+
+        private void checkBoxThreshhold_CheckedChanged(object sender, EventArgs e)
+        {
+            checkOption();
+
+        }
+        public void GrayScalePic(string input_filepath, string output_filepath, int index)
+        {
+            bool useSISThreshHold = checkBoxThreshhold.Checked;
+            bool useGrayscale = checkBoxGrayscale.Checked;
+            Bitmap bitmap = new Bitmap(input_filepath);
+            Grayscale grayFilter = new Grayscale(0.2125, 0.7154, 0.0721);
+            if (useGrayscale)
+            {
+                // Chuyền thành màu xám
+                bitmap = grayFilter.Apply(bitmap);
+            }
+            if (useSISThreshHold)
+            {
+                //Grayscale grayFilter = new Grayscale(0.2125, 0.7154, 0.0721);
+                Bitmap grImage = grayFilter.Apply(bitmap);
+                SISThreshold filter = new SISThreshold();
+                filter.ApplyInPlace(grImage);
+                bitmap = grImage;
+
+            }
+            else if (useGrayscale && useSISThreshHold)
+            {
+                bitmap = grayFilter.Apply(bitmap);
+                //Bitmap grImage = grayFilter.Apply(bitmap);
+                //// thêm filter 1 lần nữa
+                //SISThreshold filter = new SISThreshold();
+                //filter.ApplyInPlace(grImage);
+                //bitmap = grImage;
+            }
+
+            bitmap.Save(output_filepath);
+
+        }
         private string OCR(Bitmap b)
         {
             string res = "";
@@ -304,8 +413,56 @@ namespace SubtitleExtractor
             pictureBox.Refresh();
             await Task.Delay(delayMs);//<--Note Task.Delay don't block UI
         }
+        public void GrayScaleFolder(string inputFolder, string outputFolder)
+        {
+            string folder_path = System.Windows.Forms.Application.StartupPath + @"\" + inputFolder;
+            if (!Directory.Exists(folder_path))
+            {
+                MessageBox.Show("Not found pictures path: " + inputFolder);
+                return;
+            }
 
-        private async void button2_Click(object sender, EventArgs e)
+            string folder_grayscale_path = System.Windows.Forms.Application.StartupPath + @"\" + outputFolder;
+            if (!File.Exists(folder_grayscale_path))
+            {
+                System.IO.Directory.CreateDirectory(folder_grayscale_path);
+            }
+            int index = 0;
+            foreach (FileInfo file in new DirectoryInfo(inputFolder).GetFiles())
+            {
+                GrayScalePic(file.FullName, folder_grayscale_path + @"\" + file.Name, index);
+                index++;
+
+            }
+        }
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (textBoxGrayScaleInput.Text.CompareTo("") == 0)
+            {
+                return;
+            }
+            string folderOutput = textBoxGrayScaleInput.Text;
+
+            bool useSISThreshHold = checkBoxThreshhold.Checked;
+            bool useGrayscale = checkBoxGrayscale.Checked;
+            if (useGrayscale)
+            {
+                folderOutput += "_grayscale";
+            }
+            else if (useSISThreshHold)
+            {
+                folderOutput += "_sisthreshold";
+
+            }
+            else if (useGrayscale && useSISThreshHold)
+            {
+                folderOutput += "_grayscale_sisthreshold";
+
+            }
+            GrayScaleFolder(textBoxGrayScaleInput.Text, folderOutput);
+            textBoxGrayScaleOutput.Text = folderOutput;
+        }
+        private void button2_Click(object sender, EventArgs e)
         {
             //OCRPic(System.Windows.Forms.Application.StartupPath + @"\" + textBoxOCR.Text);
             StartOCRProc(textBoxOCR.Text);
@@ -316,17 +473,121 @@ namespace SubtitleExtractor
             //foreach (FileInfo file in new DirectoryInfo(System.Windows.Forms.Application.StartupPath + @"\" + textBoxOCR.Text).GetFiles())
             //{
             //    Bitmap bitmap = new Bitmap(file.FullName);
-            //    // Chuyền thành màu xám
-            //    Grayscale grayFilter = new Grayscale(0.2125, 0.7154, 0.0721);
-            //    Bitmap grImage = grayFilter.Apply(bitmap);
-            //    SISThreshold filter = new SISThreshold();
-            //    // thêm filter 1 lần nữa
-            //    filter.ApplyInPlace(grImage);
-            //    SwitchImageHighSpeed(grImage, pictureBoxOCR, 200);
+            //    //// Chuyền thành màu xám
+            //    //Grayscale grayFilter = new Grayscale(0.2125, 0.7154, 0.0721);
+            //    //Bitmap grImage = grayFilter.Apply(bitmap);
+            //    //SISThreshold filter = new SISThreshold();
+            //    //// thêm filter 1 lần nữa
+            //    //filter.ApplyInPlace(grImage);
+            //    SwitchImageHighSpeed(bitmap, pictureBoxOCR, 200);
             //}
         }
+        private void buttonShuffle_Click(object sender, EventArgs e)
+        {
+            if (textBoxGrayScaleInput.Text.CompareTo("") == 0)
+            {
+                return;
+            }
+            bool useSISThreshHold = checkBoxThreshhold.Checked;
+            bool useGrayscale = checkBoxGrayscale.Checked;
+            string grayscale_filepath = "";
+            DirectoryInfo dir = new DirectoryInfo(textBoxGrayScaleInput.Text);
+            if (!dir.Exists)
+            {
+                return ;
+            }
+            int randomIndex = random.Next(dir.GetFiles().Length - 1);
+            FileInfo file = dir.GetFiles()[randomIndex];
+            labelGrayscaleName.Text = file.Name;
+            grayscale_filepath = file.FullName;
+            displayFile = file.FullName;
+            displayFileName=file.Name;
+            Bitmap bitmap = new Bitmap(grayscale_filepath);
+            Grayscale grayFilter = new Grayscale(0.2125, 0.7154, 0.0721);
+            if (useGrayscale)
+            {
+                // Chuyền thành màu xám
+                bitmap = grayFilter.Apply(bitmap);
+            }
+            else if (useSISThreshHold)
+            {
+                Bitmap grImage = grayFilter.Apply(bitmap);
+                SISThreshold filter = new SISThreshold();
+                filter.ApplyInPlace(grImage);
+                bitmap = grImage;
+
+            }
+            else if (useGrayscale && useSISThreshHold)
+            {
+                bitmap = grayFilter.Apply(bitmap);
+            }
+            pictureBoxGrayscale.BackgroundImage = bitmap;
+        }
+        private void buttonQuickTestOCR_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                bool useSISThreshHold = checkBoxThreshhold.Checked;
+                bool useGrayscale = checkBoxGrayscale.Checked;
+                if (displayFile.CompareTo("") == 0||!File.Exists(displayFile))
+                {
+                    return;
+                }
+                string picPath = displayFile;
+                Bitmap bitmap=new Bitmap(displayFile);
+                string bitmapSavePath = "quick_test_" + displayFileName;
+                Grayscale grayFilter = new Grayscale(0.2125, 0.7154, 0.0721);
+                if (useGrayscale)
+                {
+                    // Chuyền thành màu xám
+                    bitmap = grayFilter.Apply(bitmap);
+                }
+                else if (useSISThreshHold)
+                {
+                    Bitmap grImage = grayFilter.Apply(bitmap);
+                    SISThreshold filter = new SISThreshold();
+                    filter.ApplyInPlace(grImage);
+                    bitmap = grImage;
+
+                }
+                else if (useGrayscale && useSISThreshHold)
+                {
+                    bitmap = grayFilter.Apply(bitmap);
+                }
+                bitmap.Save(System.Windows.Forms.Application.StartupPath + @"\"+ bitmapSavePath);
+                Thread t = new Thread(() =>
+                {
+                    ProcessStartInfo start = new ProcessStartInfo();
+                    start.WorkingDirectory = Environment.CurrentDirectory;
+                    start.FileName = "cmd.exe";
+                    start.Arguments = @"/k chcp 65001 & @echo off & python -u ../../pyocrsingle.py --image " + bitmapSavePath;
+                    start.UseShellExecute = false;
+                    start.RedirectStandardOutput = true;
+                    start.RedirectStandardError = true;
+                    start.CreateNoWindow = true;
 
 
+                    using (Process process = new Process())
+                    {
+                        process.StartInfo = start;
+                        process.EnableRaisingEvents = true;
+                        process.ErrorDataReceived += Process_OutputDataReceived;
+                        process.OutputDataReceived += Process_OutputDataReceived;
+                        process.Start();
+                        process.BeginErrorReadLine();
+                        process.BeginOutputReadLine();
+                    }
+                    Console.Read();
+
+                });
+                t.Start();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+        }
         private void button3_Click(object sender, EventArgs e)
         {
             string source_folder = textBoxCropFolder.Text;
@@ -349,7 +610,7 @@ namespace SubtitleExtractor
                 {
                     System.IO.Directory.CreateDirectory(folder_cropped_path);
                 }
-                DirectoryInfo di = Directory.CreateDirectory(folder_cropped_path);
+                //DirectoryInfo di = Directory.CreateDirectory(folder_cropped_path);
 
                 // Delete the directory.
                 //di.Delete();
@@ -360,6 +621,7 @@ namespace SubtitleExtractor
                 {
                     CropPic(file.FullName, source_folder + @"_cropped\" + file.Name, index);
                     index++;
+
                 }
                 textBoxOCR.Text = source_folder + @"_cropped";
 
@@ -371,6 +633,7 @@ namespace SubtitleExtractor
 
 
         }
+
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -672,7 +935,7 @@ namespace SubtitleExtractor
             string fileID = RandomString(5);
             string folderpath = Environment.CurrentDirectory + @"\" + fileID;
             string folder_cropped_path = System.Windows.Forms.Application.StartupPath + @"\" + fileID + @"_cropped";
-            textBoxCropFolder.Text = fileID ;
+            textBoxCropFolder.Text = fileID;
             //if (!System.IO.Directory.Exists(folderpath))
             //{
             //    System.IO.Directory.CreateDirectory(folderpath);
@@ -701,5 +964,7 @@ namespace SubtitleExtractor
             OpenScreenshotFile();
 
         }
+
+
     }
 }

@@ -63,6 +63,26 @@ namespace SubtitleExtractor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _698831 {
+            get {
+                object obj = ResourceManager.GetObject("698831", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap contrast_64 {
+            get {
+                object obj = ResourceManager.GetObject("contrast-64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap crop_edit_interface_snniping_tool_cropping_reduce_64 {
             get {
                 object obj = ResourceManager.GetObject("crop_edit_interface_snniping_tool_cropping_reduce-64", resourceCulture);
@@ -73,9 +93,99 @@ namespace SubtitleExtractor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap delete_icon_129320 {
+            get {
+                object obj = ResourceManager.GetObject("delete_icon_129320", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap document_scanning_QR_code_barcode_OCR_image_scanning__64 {
             get {
                 object obj = ResourceManager.GetObject("document_scanning_QR_code_barcode_OCR_image_scanning_-64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap files_31_64 {
+            get {
+                object obj = ResourceManager.GetObject("files-31-64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap focus_area_screenshot_take_picture_photography_64 {
+            get {
+                object obj = ResourceManager.GetObject("focus_area_screenshot_take_picture_photography-64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap i24_photoedit_shadows_64 {
+            get {
+                object obj = ResourceManager.GetObject("i24_photoedit_shadows-64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap icon_pause_64 {
+            get {
+                object obj = ResourceManager.GetObject("icon-pause-64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Paste_26994 {
+            get {
+                object obj = ResourceManager.GetObject("Paste_26994", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap play_64 {
+            get {
+                object obj = ResourceManager.GetObject("play-64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap refresh_14433 {
+            get {
+                object obj = ResourceManager.GetObject("refresh_14433", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap scissorregular_106276 {
+            get {
+                object obj = ResourceManager.GetObject("scissorregular_106276", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -166,6 +166,18 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="License-LGPL.txt" />
+    <None Include="Resources\i24_photoedit_shadows-64.png" />
+    <None Include="Resources\contrast-64.png" />
+    <None Include="Resources\refresh_14433.png" />
+    <None Include="Resources\delete_icon_129320.png" />
+    <None Include="Resources\Paste_26994.png" />
+    <None Include="Resources\scissorregular_106276.png" />
+    <None Include="Resources\files-31-64.png" />
+    <None Include="Resources\focus_area_screenshot_take_picture_photography-64.png" />
+    <None Include="Resources\698831.png" />
+    <None Include="Resources\1141335.png" />
+    <None Include="Resources\icon-pause-64.png" />
+    <None Include="Resources\play-64.png" />
     <None Include="Resources\document_scanning_QR_code_barcode_OCR_image_scanning_-64.png" />
     <None Include="Resources\crop_edit_interface_snniping_tool_cropping_reduce-64.png" />
     <None Include="Resources\x-19-64.png" />
