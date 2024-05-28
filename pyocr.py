@@ -99,16 +99,16 @@ for file in dir_list:
   # os.remove(filename)
   # text = pytesseract.image_to_string(Image.open(filename),lang='vie')
   result = reader.readtext(folder_image+"/"+file)
-  
+  for line in result:
+      sub=""
+      if len(result[0])>1:
+         sub+=line[1]+"\n"
 
-
-  if len(result)>0:
-    if len(result[0])>1:
-      sub=format_a_line(result[0][1],step,step+500,index)
+      fullsub=format_a_line(sub,step,step+500,index)
       with open(sub_name+".srt", 'a+', encoding="utf-8") as f: #this use to append
-      #with open("sub.srt", 'w', encoding="utf-8") as f: #this use to overwrite
-        f.write(sub)
-        index=index+1
+         #with open("sub.srt", 'w', encoding="utf-8") as f: #this use to overwrite
+         f.write(fullsub)
+         index=index+1
 
   step=step+500
 

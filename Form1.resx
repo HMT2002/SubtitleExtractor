@@ -136,10 +136,13 @@
   <metadata name="statusStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>179, 17</value>
   </metadata>
-  <metadata name="menuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>504, 17</value>
-  </metadata>
   <metadata name="toolStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>629, 17</value>
   </metadata>
+  <data name="label1.Text" xml:space="preserve">
+    <value>Bạn muốn grayscale ảnh không? Thao tác này giúp giảm tải cho việc OCR bằng cách chuyển màu ảnh thành trắng đen.
+Nhưng đừng áp dụng đối với những video có font chữ sáng, sẽ bị giảm độ chính xác
+Và xin đừng grayscale video Bad Apple, vô nghĩa lắm.
+</value>
+  </data>
 </root>
