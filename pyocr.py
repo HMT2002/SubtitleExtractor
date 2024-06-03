@@ -80,7 +80,7 @@ path = str(pathlib.Path().resolve())+'\\'+folder_image
 dir_list = os.listdir(path)
 # print( "Files and directories in '", path, "' :")
 # prints all files
-re = open(sub_name+".srt", "w")
+re = open(sub_name+"_easyocr.srt", "w")
 re.write("")
 re.close()
 for file in dir_list:
@@ -107,7 +107,7 @@ for file in dir_list:
          sub+=line[1]+"\\N"
 
       fullsub=format_a_line(sub,step,step+500,index)
-      with open(sub_name+".srt", 'a+', encoding="utf-8") as f: #this use to append
+      with open(sub_name+"_easyocr.srt", 'a+', encoding="utf-8") as f: #this use to append
          #with open("sub.srt", 'w', encoding="utf-8") as f: #this use to overwrite
          f.write(fullsub)
          index=index+1

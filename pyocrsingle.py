@@ -20,7 +20,7 @@ ap.add_argument("-p","--pre_processor",
 args=vars(ap.parse_args())
 single_image=args["image"]
 
-re = open(single_image+"_quicktest.txt", "w")
+re = open(single_image+"_quicktest_easyocr.txt", "w")
 re.write("")
 re.close()
 # init easyocr
@@ -33,6 +33,6 @@ for line in result:
   if len(line[0])>1:
     sub+=line[1]+"\\N"
   print(str(sub).encode("utf-8"), flush=True)
-  re = open(single_image+"_quicktest.txt", "a+", encoding="utf-8")
+  re = open(single_image+"_quicktest_easyocr.txt", "a+", encoding="utf-8")
   re.write(str(sub))
   re.close()

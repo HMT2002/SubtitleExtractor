@@ -6,6 +6,7 @@ using Emgu.CV.ImgHash;
 using Emgu.CV.Structure;
 using FFMpegCore;
 using LibVLCSharp.Shared;
+using LibVLCSharp.WinForms;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -232,7 +233,7 @@ namespace SubtitleExtractor
             Task<string> ocr = Task<string>.Factory.StartNew(() =>
             {
                 result = OCR(bitmap);
-                richTextBoxStatus.Text +="Tesseract: "+ result + "\n";
+                richTextBoxStatus.Text += "Tesseract: " + result + "\n";
                 return result;
             });
             return ocr.Result;
@@ -409,7 +410,7 @@ namespace SubtitleExtractor
             string res = "";
             try
             {
-                using (var engine = new TesseractEngine("./tessdata", "vie", EngineMode.Default))
+                using (var engine = new TesseractEngine("./tessdata", "vie+jpn", EngineMode.Default))
                 {
                     using (var page = engine.Process(b, PageSegMode.Auto))
                         res = page.GetText();
@@ -509,7 +510,7 @@ namespace SubtitleExtractor
             {
                 int step = 0;
                 int index = 1;
-                File.WriteAllText(System.Windows.Forms.Application.StartupPath + @"\" + textBoxOCR.Text + ".srt", "");
+                File.WriteAllText(System.Windows.Forms.Application.StartupPath + @"\" + textBoxOCR.Text + "_tesseract.srt", "");
                 Thread t = new Thread(() =>
                 {
                     foreach (FileInfo file in input_folder.GetFiles())
@@ -518,11 +519,11 @@ namespace SubtitleExtractor
                         string result = OCRPic(file.FullName);
                         if (result.Trim().CompareTo("") != 0)
                         {
-                            string formatted = formatSubtitle(result, step, step + 500, index);
+                            string formatted = formatSubtitle(result, step, step + (1000/2), index);
                             index++;
-                            File.AppendAllText(System.Windows.Forms.Application.StartupPath + @"\" + textBoxOCR.Text + ".srt", formatted);
+                            File.AppendAllText(System.Windows.Forms.Application.StartupPath + @"\" + textBoxOCR.Text + "_tesseract.srt", formatted);
                         }
-                        step += 500;
+                        step += (1000/2);
                         toolStripProgressBar1.PerformStep();
                     }
                     toolStripProgressBar1.Value = 0;
@@ -708,7 +709,7 @@ namespace SubtitleExtractor
                 Bitmap bitmap = new Bitmap(displayFile);
                 string randomtest = RandomString(7);
                 labelGrayScaleTestID.Text = randomtest;
-                string bitmapSavePath = "quick_test_"+randomtest+"_" + displayFileName;
+                string bitmapSavePath = "quick_test_" + randomtest + "_" + displayFileName;
                 Grayscale grayFilter = new Grayscale(0.2125, 0.7154, 0.0721);
                 if (useGrayscale)
                 {
@@ -761,7 +762,7 @@ namespace SubtitleExtractor
                 else
                 {
                     string result = OCRPic(bitmapSavePath);
-                    File.WriteAllText(bitmapSavePath.Split('.')[0] + ".txt", result);
+                    File.WriteAllText(bitmapSavePath.Split('.')[0] + "_tesseract.txt", result);
                 }
             }
             catch (Exception ex)
@@ -1159,6 +1160,67 @@ namespace SubtitleExtractor
         {
             OpenScreenshotFile();
 
+        }
+
+        #region Draw crop section
+
+        private void videoViewMain_MouseClick(object sender, MouseEventArgs e)
+        {
+            GetVideoCropShot(e, videoViewMain);
+        }
+        private const uint Width = 320;
+        private const uint Height = 180;
+
+        private const uint BytePerPixel = 4;
+
+        public void GetVideoCropShot(MouseEventArgs e, Control ctrl)
+        {
+
+            labelYScreen.Text = e.X.ToString() + " : " + e.Y.ToString();
+
+            if (_mp!=null)
+            {
+                pictureBoxCrop.Refresh();
+                uint video_width = 0;
+                uint video_height = 0;
+                uint video_pixel = 0;
+                var size = videoViewMain.MediaPlayer.Size(video_pixel, ref video_width, ref video_height);
+                labelXScreen.Text = video_pixel.ToString() + " : " + video_width.ToString() + " : " + video_height.ToString();
+                string randomID = RandomString(8);
+                string tempcropPath = System.Windows.Forms.Application.StartupPath + @"/crop_preview_" + randomID + ".png";
+
+                int input_crop_X_percentage = (int)((double)(e.X * 100) / ctrl.Width);
+                int input_crop_Y_percentage = (int)((double)(e.Y * 100) / ctrl.Height);
+                int input_crop_X = (int)(video_width * (decimal)input_crop_X_percentage / 100);
+                int input_crop_Y = (int)(video_height * (decimal)input_crop_Y_percentage / 100);
+                int input_crop_height = (int)(video_height *(decimal) (100 - input_crop_Y_percentage) / 100);
+                int input_crop_width = (int)(video_width *(decimal) (100 - input_crop_X_percentage) / 100);
+                textBoxCropX.Text = input_crop_X_percentage.ToString();
+                textBoxCropY.Text = input_crop_Y_percentage.ToString();
+                textBoxCropHeight.Text = (100 - input_crop_Y_percentage).ToString();
+                textBoxCropWidth.Text = (100 - input_crop_X_percentage).ToString();
+
+                labelCrop.Text = "X%: " + input_crop_X_percentage + "; X:" + input_crop_X + "; Y%: " + input_crop_Y_percentage + "; Y:" + input_crop_Y + "\n" + "Width: " + input_crop_width + "; Height:" + input_crop_height + "\n" + "TotalX: " + (input_crop_width + input_crop_X) + "; TotalY: " + (input_crop_height + input_crop_Y);
+                _mp.TakeSnapshot(0, tempcropPath, 0, 0);
+
+
+                Rectangle myROI = new Rectangle(input_crop_X, input_crop_Y, input_crop_width, input_crop_height);
+                Mat img = CvInvoke.Imread(tempcropPath, Emgu.CV.CvEnum.ImreadModes.AnyColor);
+                Mat cropped_img = new Mat(img, myROI);
+                pictureBoxCrop.BackgroundImage = cropped_img.ToBitmap();
+                cropped_img.Save(System.Windows.Forms.Application.StartupPath + @"/crop_preview_" + randomID + "_cropped.png");
+
+                //cropped_img.Dispose();
+                //img.Dispose();         
+                //File.Delete(tempcropPath);
+            }
+        }
+
+        #endregion
+
+        private void transparentPanelVideo_MouseClick(object sender, MouseEventArgs e)
+        {
+            GetVideoCropShot(e, videoViewMain);
         }
     }
 }

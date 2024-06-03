@@ -30,6 +30,8 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.panel1 = new System.Windows.Forms.Panel();
+            this.labelYScreen = new System.Windows.Forms.Label();
+            this.labelXScreen = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.textBoxExtractFolder = new System.Windows.Forms.TextBox();
             this.videoViewMain = new LibVLCSharp.WinForms.VideoView();
@@ -73,6 +75,7 @@
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton12 = new System.Windows.Forms.ToolStripButton();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.labelGrayScaleTestID = new System.Windows.Forms.Label();
             this.buttonQuickTestOCR = new System.Windows.Forms.Button();
             this.buttonShuffle = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
@@ -86,7 +89,8 @@
             this.pictureBoxGrayscale = new System.Windows.Forms.PictureBox();
             this.textBoxGrayScaleInput = new System.Windows.Forms.TextBox();
             this.buttonGrayscale = new System.Windows.Forms.Button();
-            this.labelGrayScaleTestID = new System.Windows.Forms.Label();
+            this.labelCrop = new System.Windows.Forms.Label();
+            this.transparentPanelVideo = new SubtitleExtractor.TransparentPanel();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.videoViewMain)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tkBrVolume)).BeginInit();
@@ -103,6 +107,10 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.labelCrop);
+            this.panel1.Controls.Add(this.transparentPanelVideo);
+            this.panel1.Controls.Add(this.labelYScreen);
+            this.panel1.Controls.Add(this.labelXScreen);
             this.panel1.Controls.Add(this.label6);
             this.panel1.Controls.Add(this.textBoxExtractFolder);
             this.panel1.Controls.Add(this.videoViewMain);
@@ -114,6 +122,24 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(599, 391);
             this.panel1.TabIndex = 0;
+            // 
+            // labelYScreen
+            // 
+            this.labelYScreen.AutoSize = true;
+            this.labelYScreen.Location = new System.Drawing.Point(398, 356);
+            this.labelYScreen.Name = "labelYScreen";
+            this.labelYScreen.Size = new System.Drawing.Size(23, 13);
+            this.labelYScreen.TabIndex = 26;
+            this.labelYScreen.Text = "Y:  ";
+            // 
+            // labelXScreen
+            // 
+            this.labelXScreen.AutoSize = true;
+            this.labelXScreen.Location = new System.Drawing.Point(398, 341);
+            this.labelXScreen.Name = "labelXScreen";
+            this.labelXScreen.Size = new System.Drawing.Size(20, 13);
+            this.labelXScreen.TabIndex = 25;
+            this.labelXScreen.Text = "X: ";
             // 
             // label6
             // 
@@ -133,13 +159,15 @@
             // 
             // videoViewMain
             // 
-            this.videoViewMain.BackColor = System.Drawing.Color.Black;
+            this.videoViewMain.BackColor = System.Drawing.Color.White;
+            this.videoViewMain.ForeColor = System.Drawing.Color.Transparent;
             this.videoViewMain.Location = new System.Drawing.Point(3, 38);
             this.videoViewMain.MediaPlayer = null;
             this.videoViewMain.Name = "videoViewMain";
             this.videoViewMain.Size = new System.Drawing.Size(550, 262);
             this.videoViewMain.TabIndex = 1;
             this.videoViewMain.Text = "videoViewMain";
+            this.videoViewMain.MouseClick += new System.Windows.Forms.MouseEventHandler(this.videoViewMain_MouseClick);
             // 
             // tkBrVolume
             // 
@@ -194,6 +222,7 @@
             this.textBoxCropHeight.Name = "textBoxCropHeight";
             this.textBoxCropHeight.Size = new System.Drawing.Size(93, 20);
             this.textBoxCropHeight.TabIndex = 25;
+            this.textBoxCropHeight.Text = "18";
             // 
             // panel2
             // 
@@ -251,6 +280,7 @@
             this.textBoxCropWidth.Name = "textBoxCropWidth";
             this.textBoxCropWidth.Size = new System.Drawing.Size(93, 20);
             this.textBoxCropWidth.TabIndex = 31;
+            this.textBoxCropWidth.Text = "100";
             // 
             // label9
             // 
@@ -276,6 +306,7 @@
             this.textBoxCropY.Name = "textBoxCropY";
             this.textBoxCropY.Size = new System.Drawing.Size(93, 20);
             this.textBoxCropY.TabIndex = 28;
+            this.textBoxCropY.Text = "82";
             // 
             // textBoxCropX
             // 
@@ -430,7 +461,7 @@
             // toolStripProgressBar1
             // 
             this.toolStripProgressBar1.Name = "toolStripProgressBar1";
-            this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 16);
+            this.toolStripProgressBar1.Size = new System.Drawing.Size(300, 16);
             // 
             // toolStrip1
             // 
@@ -534,6 +565,15 @@
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(760, 319);
             this.panel4.TabIndex = 5;
+            // 
+            // labelGrayScaleTestID
+            // 
+            this.labelGrayScaleTestID.Font = new System.Drawing.Font("Arial Narrow", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelGrayScaleTestID.Location = new System.Drawing.Point(287, 8);
+            this.labelGrayScaleTestID.Name = "labelGrayScaleTestID";
+            this.labelGrayScaleTestID.Size = new System.Drawing.Size(184, 18);
+            this.labelGrayScaleTestID.TabIndex = 17;
+            this.labelGrayScaleTestID.Text = "None";
             // 
             // buttonQuickTestOCR
             // 
@@ -657,14 +697,22 @@
             this.buttonGrayscale.UseVisualStyleBackColor = true;
             this.buttonGrayscale.Click += new System.EventHandler(this.button1_Click);
             // 
-            // labelGrayScaleTestID
+            // labelCrop
             // 
-            this.labelGrayScaleTestID.Font = new System.Drawing.Font("Arial Narrow", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelGrayScaleTestID.Location = new System.Drawing.Point(287, 8);
-            this.labelGrayScaleTestID.Name = "labelGrayScaleTestID";
-            this.labelGrayScaleTestID.Size = new System.Drawing.Size(184, 18);
-            this.labelGrayScaleTestID.TabIndex = 17;
-            this.labelGrayScaleTestID.Text = "None";
+            this.labelCrop.AutoSize = true;
+            this.labelCrop.Location = new System.Drawing.Point(17, 342);
+            this.labelCrop.Name = "labelCrop";
+            this.labelCrop.Size = new System.Drawing.Size(35, 13);
+            this.labelCrop.TabIndex = 28;
+            this.labelCrop.Text = "Crop: ";
+            // 
+            // transparentPanelVideo
+            // 
+            this.transparentPanelVideo.Location = new System.Drawing.Point(3, 38);
+            this.transparentPanelVideo.Name = "transparentPanelVideo";
+            this.transparentPanelVideo.Size = new System.Drawing.Size(550, 262);
+            this.transparentPanelVideo.TabIndex = 27;
+            this.transparentPanelVideo.MouseClick += new System.Windows.Forms.MouseEventHandler(this.transparentPanelVideo_MouseClick);
             // 
             // Form1
             // 
@@ -764,6 +812,10 @@
         private System.Windows.Forms.RadioButton radioButtonEasyOCR;
         private System.Windows.Forms.RadioButton radioButtonTesseract;
         private System.Windows.Forms.Label labelGrayScaleTestID;
+        private System.Windows.Forms.Label labelYScreen;
+        private System.Windows.Forms.Label labelXScreen;
+        private TransparentPanel transparentPanelVideo;
+        private System.Windows.Forms.Label labelCrop;
     }
 }
 
