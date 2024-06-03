@@ -17,8 +17,10 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -221,60 +223,27 @@ namespace SubtitleExtractor
             }
 
         }
-        public void OCRPic(string folder_path)
+        public string OCRPic(string filepath)
         {
-            foreach (FileInfo file in new DirectoryInfo(folder_path).GetFiles())
+
+            Bitmap bitmap = new Bitmap(filepath);
+            string result = "";
+            richTextBoxStatus.Text += "Start Tesseract test: \n";
+            Task<string> ocr = Task<string>.Factory.StartNew(() =>
             {
-                Bitmap bitmap = new Bitmap(file.FullName);
-                // Chuyền thành màu xám
-                Grayscale grayFilter = new Grayscale(0.2125, 0.7154, 0.0721);
-                Bitmap grImage = grayFilter.Apply(bitmap);
-                SISThreshold filter = new SISThreshold();
-                // thêm filter 1 lần nữa
-                filter.ApplyInPlace(grImage);
+                result = OCR(bitmap);
+                richTextBoxStatus.Text +="Tesseract: "+ result + "\n";
+                return result;
+            });
+            return ocr.Result;
+            //Thread t = new Thread(() =>
+            //{
+            //    string result = OCR(grImage);
+            //    richTextBoxStatus.Text += result + "\n";
+            //});
+            //t.Start();
 
 
-                //Bitmap revBlackAndWhite = new Bitmap(grImage.Width, grImage.Height);
-                //Color b = Color.Black;
-                //Color w = Color.White;
-                //Color c = Color.White;
-                //for (int i = 0; i < grImage.Width; i++)
-                //{
-                //    for (int y = 0; y < grImage.Height; y++)
-                //    {
-                //        c = grImage.GetPixel(i, y);
-                //        if (c.ToArgb().Equals(b.ToArgb()))
-                //        {
-                //            revBlackAndWhite.SetPixel(i, y, w);
-                //        }
-                //        else if (c.ToArgb().Equals(w.ToArgb()))
-                //        {
-                //            revBlackAndWhite.SetPixel(i, y, b);
-                //        }
-                //        else
-                //        {
-                //            revBlackAndWhite.SetPixel(i, y, c);
-                //        }
-                //        //string folder_cropped_path = System.Windows.Forms.Application.StartupPath + @"\" + folder_path + @"\";
-                //        //revBlackAndWhite.Save(folder_cropped_path +@"\"+ "revBlackAndWhite_" + i + ".png");
-                //    }
-                //}
-
-
-                string result = "";
-                Task.Factory.StartNew(() =>
-                {
-                    result = OCR(grImage);
-                    richTextBoxStatus.Text += result + "\n";
-                });
-                //Thread t = new Thread(() =>
-                //{
-                //    string result = OCR(grImage);
-                //    richTextBoxStatus.Text += result + "\n";
-                //});
-                //t.Start();
-
-            }
 
         }
         public void CropPic(string input_filepath, string output_filepath, int index)
@@ -519,10 +488,10 @@ namespace SubtitleExtractor
 
             GrayScaleFolder(textBoxGrayScaleInput.Text, folderOutput);
             textBoxGrayScaleOutput.Text = folderOutput;
+            textBoxOCR.Text = folderOutput;
         }
         private void button2_Click(object sender, EventArgs e)
         {
-            //OCRPic(System.Windows.Forms.Application.StartupPath + @"\" + textBoxOCR.Text);
             DirectoryInfo input_folder = new DirectoryInfo(System.Windows.Forms.Application.StartupPath + @"\" + textBoxOCR.Text);
             if (!input_folder.Exists)
             {
@@ -530,8 +499,38 @@ namespace SubtitleExtractor
             }
             toolStripProgressBar1.Maximum = input_folder.GetFiles().Length;
             toolStripProgressBar1.Value = 0;
-            StartOCRProc(textBoxOCR.Text);
 
+            if (radioButtonEasyOCR.Checked)
+            {
+                StartOCRProc(textBoxOCR.Text);
+
+            }
+            else if (radioButtonTesseract.Checked)
+            {
+                int step = 0;
+                int index = 1;
+                File.WriteAllText(System.Windows.Forms.Application.StartupPath + @"\" + textBoxOCR.Text + ".srt", "");
+                Thread t = new Thread(() =>
+                {
+                    foreach (FileInfo file in input_folder.GetFiles())
+                    {
+
+                        string result = OCRPic(file.FullName);
+                        if (result.Trim().CompareTo("") != 0)
+                        {
+                            string formatted = formatSubtitle(result, step, step + 500, index);
+                            index++;
+                            File.AppendAllText(System.Windows.Forms.Application.StartupPath + @"\" + textBoxOCR.Text + ".srt", formatted);
+                        }
+                        step += 500;
+                        toolStripProgressBar1.PerformStep();
+                    }
+                    toolStripProgressBar1.Value = 0;
+                });
+                t.Start();
+
+
+            }
             //backgroundWorker1.RunWorkerAsync();//start worker
 
 
@@ -548,6 +547,110 @@ namespace SubtitleExtractor
             //    //filter.ApplyInPlace(grImage);
             //    SwitchImageHighSpeed(bitmap, pictureBoxOCR, 200);
             //}
+        }
+        public string formatSubtitle(string text, int timeFrom, int timeTo, int index)
+        {
+            string formated = "";
+
+            int milisecTimeFrom = timeFrom % 1000;
+            int secTimeFrom = timeFrom / 1000;
+            int hourTimeFrom = (int)(Math.Floor((double)secTimeFrom / (60 * 60)));
+            secTimeFrom = secTimeFrom - (hourTimeFrom * (60 * 60));
+            int minuteTimeFrom = (int)(Math.Floor((double)secTimeFrom / (60)));
+            secTimeFrom = secTimeFrom - (minuteTimeFrom * (60));
+
+            int milisecTimeTo = timeTo % 1000;
+            int secTimeTo = timeTo / 1000;
+            int hourTimeTo = (int)(Math.Floor((double)secTimeTo / (60 * 60)));
+            secTimeTo = secTimeTo - (hourTimeTo * (60 * 60));
+            int minuteTimeTo = (int)(Math.Floor((double)secTimeTo / (60)));
+            secTimeTo = secTimeTo - (minuteTimeTo * (60));
+
+            string milisecFromStr = milisecTimeFrom.ToString();
+            string secTimeFromStr = secTimeFrom.ToString();
+            string minuteTimeFromStr = minuteTimeFrom.ToString();
+            string hourTimeFromStr = hourTimeFrom.ToString();
+
+            string milisecToStr = milisecTimeTo.ToString();
+            string secTimeToStr = secTimeTo.ToString();
+            string minuteTimeToStr = minuteTimeTo.ToString();
+            string hourTimeToStr = hourTimeTo.ToString();
+
+            if (hourTimeFrom < 10)
+            {
+                hourTimeFromStr = "0" + hourTimeFromStr;
+            }
+            if (hourTimeTo < 10)
+            {
+                hourTimeToStr = "0" + hourTimeToStr;
+
+            }
+
+            if (minuteTimeFrom < 10)
+            {
+                minuteTimeFromStr = "0" + minuteTimeFromStr;
+
+            }
+            if (minuteTimeTo < 10)
+            {
+                minuteTimeToStr = "0" + minuteTimeToStr;
+
+            }
+            if (secTimeFrom < 10)
+            {
+                secTimeFromStr = "0" + secTimeFromStr;
+            }
+
+            if (secTimeTo < 10)
+            {
+                secTimeToStr = "0" + secTimeToStr;
+            }
+
+            if (milisecTimeFrom < 100)
+            {
+                if (milisecTimeFrom < 10)
+                {
+                    milisecFromStr = "00" + milisecFromStr;
+
+                }
+                else
+                {
+                    milisecFromStr = "0" + milisecFromStr;
+
+                }
+            }
+            if (milisecTimeTo < 100)
+            {
+                if (milisecTimeTo < 10)
+                {
+                    milisecToStr = "00" + milisecToStr;
+                }
+                else
+                {
+                    milisecToStr = "0" + milisecToStr;
+                }
+            }
+            text = preProcessTextInSub(text);
+            formated = index.ToString() + "\n" + hourTimeFromStr + ":" + minuteTimeFromStr + ":" + secTimeFromStr + "," + milisecFromStr + " --> " + hourTimeToStr + ":" + minuteTimeToStr + ":" + secTimeToStr + "," + milisecToStr + "\n " + text + "\n" + "\n";
+
+
+            return formated;
+        }
+        public string preProcessTextInSub(string text)
+        {
+            if (text.CompareTo("") == 0)
+            {
+                return text;
+            }
+            string proceedText = text;
+            var collection = Regex.Matches(text, @"^\d+$", RegexOptions.Multiline);
+            foreach (Match record in collection)
+            {
+                proceedText = proceedText.Replace(record.Value, "");
+                int i = 0;
+            }
+
+            return proceedText;
         }
         private void buttonShuffle_Click(object sender, EventArgs e)
         {
@@ -592,6 +695,7 @@ namespace SubtitleExtractor
         }
         private void buttonQuickTestOCR_Click(object sender, EventArgs e)
         {
+
             try
             {
                 bool useSISThreshHold = checkBoxThreshhold.Checked;
@@ -602,7 +706,9 @@ namespace SubtitleExtractor
                 }
                 string picPath = displayFile;
                 Bitmap bitmap = new Bitmap(displayFile);
-                string bitmapSavePath = "quick_test_" + displayFileName;
+                string randomtest = RandomString(7);
+                labelGrayScaleTestID.Text = randomtest;
+                string bitmapSavePath = "quick_test_"+randomtest+"_" + displayFileName;
                 Grayscale grayFilter = new Grayscale(0.2125, 0.7154, 0.0721);
                 if (useGrayscale)
                 {
@@ -622,37 +728,49 @@ namespace SubtitleExtractor
                     bitmap = grayFilter.Apply(bitmap);
                 }
                 bitmap.Save(System.Windows.Forms.Application.StartupPath + @"\" + bitmapSavePath);
-                Thread t = new Thread(() =>
+                bitmap.Dispose();
+                if (radioButtonEasyOCR.Checked)
                 {
-                    ProcessStartInfo start = new ProcessStartInfo();
-                    start.WorkingDirectory = Environment.CurrentDirectory;
-                    start.FileName = "cmd.exe";
-                    start.Arguments = @"/k chcp 65001 & @echo off & python -u ../../pyocrsingle.py --image " + bitmapSavePath +" & exit";
-                    start.UseShellExecute = false;
-                    start.RedirectStandardOutput = true;
-                    start.RedirectStandardError = true;
-                    start.CreateNoWindow = true;
-
-
-                    using (Process process = new Process())
+                    Thread t = new Thread(() =>
                     {
-                        process.StartInfo = start;
-                        process.EnableRaisingEvents = true;
-                        process.ErrorDataReceived += Process_OutputDataReceived;
-                        process.OutputDataReceived += Process_OutputDataReceived;
-                        process.Start();
-                        process.BeginErrorReadLine();
-                        process.BeginOutputReadLine();
-                    }
-                    Console.Read();
+                        ProcessStartInfo start = new ProcessStartInfo();
+                        start.WorkingDirectory = Environment.CurrentDirectory;
+                        start.FileName = "cmd.exe";
+                        start.Arguments = @"/k chcp 65001 & @echo off & python -u ../../pyocrsingle.py --image " + bitmapSavePath + " & exit";
+                        start.UseShellExecute = false;
+                        start.RedirectStandardOutput = true;
+                        start.RedirectStandardError = true;
+                        start.CreateNoWindow = true;
 
-                });
-                t.Start();
+
+                        using (Process process = new Process())
+                        {
+                            process.StartInfo = start;
+                            process.EnableRaisingEvents = true;
+                            process.ErrorDataReceived += Process_OutputDataReceived;
+                            process.OutputDataReceived += Process_OutputDataReceived;
+                            process.Start();
+                            process.BeginErrorReadLine();
+                            process.BeginOutputReadLine();
+                        }
+                        Console.Read();
+
+                    });
+                    t.Start();
+                }
+                else
+                {
+                    string result = OCRPic(bitmapSavePath);
+                    File.WriteAllText(bitmapSavePath.Split('.')[0] + ".txt", result);
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
+
+
+
 
         }
         private void button3_Click(object sender, EventArgs e)
@@ -1024,20 +1142,6 @@ namespace SubtitleExtractor
         private void toolStripButton7_Click(object sender, EventArgs e)
         {
 
-            string fileID = RandomString(5);
-            string folderpath = Environment.CurrentDirectory + @"\" + fileID;
-            string folder_cropped_path = System.Windows.Forms.Application.StartupPath + @"\" + fileID + @"_cropped";
-            textBoxCropFolder.Text = fileID;
-            if (!System.IO.Directory.Exists(folderpath))
-            {
-                System.IO.Directory.CreateDirectory(folderpath);
-            }
-
-
-            if (!File.Exists(folder_cropped_path))
-            {
-                System.IO.Directory.CreateDirectory(folder_cropped_path);
-            }
 
 
             ExtractScreenshot(textBoxExtractFolder.Text, 2);
@@ -1056,7 +1160,5 @@ namespace SubtitleExtractor
             OpenScreenshotFile();
 
         }
-
-
     }
 }

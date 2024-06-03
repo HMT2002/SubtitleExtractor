@@ -30,7 +30,6 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.panel1 = new System.Windows.Forms.Panel();
-            this.textBoxCropHeight = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.textBoxExtractFolder = new System.Windows.Forms.TextBox();
             this.videoViewMain = new LibVLCSharp.WinForms.VideoView();
@@ -38,12 +37,24 @@
             this.btnPause = new System.Windows.Forms.Button();
             this.tkBrDuration = new System.Windows.Forms.TrackBar();
             this.btnStart = new System.Windows.Forms.Button();
+            this.textBoxCropHeight = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.checkBoxFullWidthCrop = new System.Windows.Forms.CheckBox();
+            this.checkBoxFullHeightCrop = new System.Windows.Forms.CheckBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.textBoxCropWidth = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.textBoxCropY = new System.Windows.Forms.TextBox();
+            this.textBoxCropX = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.pictureBoxCrop = new System.Windows.Forms.PictureBox();
             this.textBoxCropFolder = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.radioButtonEasyOCR = new System.Windows.Forms.RadioButton();
+            this.radioButtonTesseract = new System.Windows.Forms.RadioButton();
             this.label5 = new System.Windows.Forms.Label();
             this.pictureBoxOCR = new System.Windows.Forms.PictureBox();
             this.textBoxOCR = new System.Windows.Forms.TextBox();
@@ -75,15 +86,7 @@
             this.pictureBoxGrayscale = new System.Windows.Forms.PictureBox();
             this.textBoxGrayScaleInput = new System.Windows.Forms.TextBox();
             this.buttonGrayscale = new System.Windows.Forms.Button();
-            this.label7 = new System.Windows.Forms.Label();
-            this.textBoxCropX = new System.Windows.Forms.TextBox();
-            this.textBoxCropY = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.textBoxCropWidth = new System.Windows.Forms.TextBox();
-            this.checkBoxFullHeightCrop = new System.Windows.Forms.CheckBox();
-            this.checkBoxFullWidthCrop = new System.Windows.Forms.CheckBox();
+            this.labelGrayScaleTestID = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.videoViewMain)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tkBrVolume)).BeginInit();
@@ -111,13 +114,6 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(599, 391);
             this.panel1.TabIndex = 0;
-            // 
-            // textBoxCropHeight
-            // 
-            this.textBoxCropHeight.Location = new System.Drawing.Point(179, 135);
-            this.textBoxCropHeight.Name = "textBoxCropHeight";
-            this.textBoxCropHeight.Size = new System.Drawing.Size(93, 20);
-            this.textBoxCropHeight.TabIndex = 25;
             // 
             // label6
             // 
@@ -192,6 +188,13 @@
             this.btnStart.UseVisualStyleBackColor = true;
             this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
             // 
+            // textBoxCropHeight
+            // 
+            this.textBoxCropHeight.Location = new System.Drawing.Point(179, 135);
+            this.textBoxCropHeight.Name = "textBoxCropHeight";
+            this.textBoxCropHeight.Size = new System.Drawing.Size(93, 20);
+            this.textBoxCropHeight.TabIndex = 25;
+            // 
             // panel2
             // 
             this.panel2.Controls.Add(this.checkBoxFullWidthCrop);
@@ -212,6 +215,83 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(377, 182);
             this.panel2.TabIndex = 1;
+            // 
+            // checkBoxFullWidthCrop
+            // 
+            this.checkBoxFullWidthCrop.AutoSize = true;
+            this.checkBoxFullWidthCrop.Location = new System.Drawing.Point(278, 159);
+            this.checkBoxFullWidthCrop.Name = "checkBoxFullWidthCrop";
+            this.checkBoxFullWidthCrop.Size = new System.Drawing.Size(76, 17);
+            this.checkBoxFullWidthCrop.TabIndex = 33;
+            this.checkBoxFullWidthCrop.Text = "Full width?";
+            this.checkBoxFullWidthCrop.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxFullHeightCrop
+            // 
+            this.checkBoxFullHeightCrop.AutoSize = true;
+            this.checkBoxFullHeightCrop.Location = new System.Drawing.Point(278, 134);
+            this.checkBoxFullHeightCrop.Name = "checkBoxFullHeightCrop";
+            this.checkBoxFullHeightCrop.Size = new System.Drawing.Size(80, 17);
+            this.checkBoxFullHeightCrop.TabIndex = 17;
+            this.checkBoxFullHeightCrop.Text = "Full height?";
+            this.checkBoxFullHeightCrop.UseVisualStyleBackColor = true;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(128, 163);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(49, 13);
+            this.label10.TabIndex = 32;
+            this.label10.Text = "Width%: ";
+            // 
+            // textBoxCropWidth
+            // 
+            this.textBoxCropWidth.Location = new System.Drawing.Point(179, 159);
+            this.textBoxCropWidth.Name = "textBoxCropWidth";
+            this.textBoxCropWidth.Size = new System.Drawing.Size(93, 20);
+            this.textBoxCropWidth.TabIndex = 31;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(128, 140);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(49, 13);
+            this.label9.TabIndex = 30;
+            this.label9.Text = "Height%:";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(5, 162);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(25, 13);
+            this.label8.TabIndex = 29;
+            this.label8.Text = "Y%:";
+            // 
+            // textBoxCropY
+            // 
+            this.textBoxCropY.Location = new System.Drawing.Point(33, 159);
+            this.textBoxCropY.Name = "textBoxCropY";
+            this.textBoxCropY.Size = new System.Drawing.Size(93, 20);
+            this.textBoxCropY.TabIndex = 28;
+            // 
+            // textBoxCropX
+            // 
+            this.textBoxCropX.Location = new System.Drawing.Point(33, 135);
+            this.textBoxCropX.Name = "textBoxCropX";
+            this.textBoxCropX.Size = new System.Drawing.Size(93, 20);
+            this.textBoxCropX.TabIndex = 27;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(5, 139);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(25, 13);
+            this.label7.TabIndex = 26;
+            this.label7.Text = "X%:";
             // 
             // label4
             // 
@@ -251,6 +331,8 @@
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.radioButtonEasyOCR);
+            this.panel3.Controls.Add(this.radioButtonTesseract);
             this.panel3.Controls.Add(this.label5);
             this.panel3.Controls.Add(this.pictureBoxOCR);
             this.panel3.Controls.Add(this.textBoxOCR);
@@ -259,6 +341,29 @@
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(377, 179);
             this.panel3.TabIndex = 1;
+            // 
+            // radioButtonEasyOCR
+            // 
+            this.radioButtonEasyOCR.AutoSize = true;
+            this.radioButtonEasyOCR.Checked = true;
+            this.radioButtonEasyOCR.Location = new System.Drawing.Point(208, 136);
+            this.radioButtonEasyOCR.Name = "radioButtonEasyOCR";
+            this.radioButtonEasyOCR.Size = new System.Drawing.Size(71, 17);
+            this.radioButtonEasyOCR.TabIndex = 16;
+            this.radioButtonEasyOCR.TabStop = true;
+            this.radioButtonEasyOCR.Text = "EasyOCR";
+            this.radioButtonEasyOCR.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonTesseract
+            // 
+            this.radioButtonTesseract.AutoSize = true;
+            this.radioButtonTesseract.Location = new System.Drawing.Point(208, 153);
+            this.radioButtonTesseract.Name = "radioButtonTesseract";
+            this.radioButtonTesseract.Size = new System.Drawing.Size(72, 17);
+            this.radioButtonTesseract.TabIndex = 15;
+            this.radioButtonTesseract.TabStop = true;
+            this.radioButtonTesseract.Text = "Tesseract";
+            this.radioButtonTesseract.UseVisualStyleBackColor = true;
             // 
             // label5
             // 
@@ -288,7 +393,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(106, 135);
+            this.button2.Location = new System.Drawing.Point(15, 135);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(187, 35);
             this.button2.TabIndex = 1;
@@ -411,6 +516,7 @@
             // 
             // panel4
             // 
+            this.panel4.Controls.Add(this.labelGrayScaleTestID);
             this.panel4.Controls.Add(this.buttonQuickTestOCR);
             this.panel4.Controls.Add(this.buttonShuffle);
             this.panel4.Controls.Add(this.label3);
@@ -511,9 +617,9 @@
             // label1
             // 
             this.label1.Font = new System.Drawing.Font("Arial Narrow", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(323, 220);
+            this.label1.Location = new System.Drawing.Point(481, 220);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(425, 93);
+            this.label1.Size = new System.Drawing.Size(267, 93);
             this.label1.TabIndex = 8;
             this.label1.Text = resources.GetString("label1.Text");
             // 
@@ -551,82 +657,14 @@
             this.buttonGrayscale.UseVisualStyleBackColor = true;
             this.buttonGrayscale.Click += new System.EventHandler(this.button1_Click);
             // 
-            // label7
+            // labelGrayScaleTestID
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(5, 139);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(25, 13);
-            this.label7.TabIndex = 26;
-            this.label7.Text = "X%:";
-            // 
-            // textBoxCropX
-            // 
-            this.textBoxCropX.Location = new System.Drawing.Point(33, 135);
-            this.textBoxCropX.Name = "textBoxCropX";
-            this.textBoxCropX.Size = new System.Drawing.Size(93, 20);
-            this.textBoxCropX.TabIndex = 27;
-            // 
-            // textBoxCropY
-            // 
-            this.textBoxCropY.Location = new System.Drawing.Point(33, 159);
-            this.textBoxCropY.Name = "textBoxCropY";
-            this.textBoxCropY.Size = new System.Drawing.Size(93, 20);
-            this.textBoxCropY.TabIndex = 28;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(5, 162);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(25, 13);
-            this.label8.TabIndex = 29;
-            this.label8.Text = "Y%:";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(128, 140);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(49, 13);
-            this.label9.TabIndex = 30;
-            this.label9.Text = "Height%:";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(128, 163);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(49, 13);
-            this.label10.TabIndex = 32;
-            this.label10.Text = "Width%: ";
-            // 
-            // textBoxCropWidth
-            // 
-            this.textBoxCropWidth.Location = new System.Drawing.Point(179, 159);
-            this.textBoxCropWidth.Name = "textBoxCropWidth";
-            this.textBoxCropWidth.Size = new System.Drawing.Size(93, 20);
-            this.textBoxCropWidth.TabIndex = 31;
-            // 
-            // checkBoxFullHeightCrop
-            // 
-            this.checkBoxFullHeightCrop.AutoSize = true;
-            this.checkBoxFullHeightCrop.Location = new System.Drawing.Point(278, 134);
-            this.checkBoxFullHeightCrop.Name = "checkBoxFullHeightCrop";
-            this.checkBoxFullHeightCrop.Size = new System.Drawing.Size(80, 17);
-            this.checkBoxFullHeightCrop.TabIndex = 17;
-            this.checkBoxFullHeightCrop.Text = "Full height?";
-            this.checkBoxFullHeightCrop.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxFullWidthCrop
-            // 
-            this.checkBoxFullWidthCrop.AutoSize = true;
-            this.checkBoxFullWidthCrop.Location = new System.Drawing.Point(278, 159);
-            this.checkBoxFullWidthCrop.Name = "checkBoxFullWidthCrop";
-            this.checkBoxFullWidthCrop.Size = new System.Drawing.Size(76, 17);
-            this.checkBoxFullWidthCrop.TabIndex = 33;
-            this.checkBoxFullWidthCrop.Text = "Full width?";
-            this.checkBoxFullWidthCrop.UseVisualStyleBackColor = true;
+            this.labelGrayScaleTestID.Font = new System.Drawing.Font("Arial Narrow", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelGrayScaleTestID.Location = new System.Drawing.Point(287, 8);
+            this.labelGrayScaleTestID.Name = "labelGrayScaleTestID";
+            this.labelGrayScaleTestID.Size = new System.Drawing.Size(184, 18);
+            this.labelGrayScaleTestID.TabIndex = 17;
+            this.labelGrayScaleTestID.Text = "None";
             // 
             // Form1
             // 
@@ -723,6 +761,9 @@
         private System.Windows.Forms.TextBox textBoxCropX;
         private System.Windows.Forms.CheckBox checkBoxFullWidthCrop;
         private System.Windows.Forms.CheckBox checkBoxFullHeightCrop;
+        private System.Windows.Forms.RadioButton radioButtonEasyOCR;
+        private System.Windows.Forms.RadioButton radioButtonTesseract;
+        private System.Windows.Forms.Label labelGrayScaleTestID;
     }
 }
 

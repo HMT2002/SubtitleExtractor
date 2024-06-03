@@ -70,8 +70,8 @@ folder_image=args["folder"]
 sub_name=args["subname"]
 
 # init easyocr
-# reader = easyocr.Reader(['vi']) # this needs to run only once to load the model into memory
-reader = easyocr.Reader(['vi','en'])
+reader = easyocr.Reader(['vi']) # this needs to run only once to load the model into memory
+# reader = easyocr.Reader(['vi','en'])
 step=0
 index=1
 #read files in folder
@@ -99,10 +99,12 @@ for file in dir_list:
   # os.remove(filename)
   # text = pytesseract.image_to_string(Image.open(filename),lang='vie')
   result = reader.readtext(folder_image+"/"+file)
+   # result.reverse()
   for line in result:
       sub=""
+
       if len(result[0])>1:
-         sub+=line[1]+"\n"
+         sub+=line[1]+"\\N"
 
       fullsub=format_a_line(sub,step,step+500,index)
       with open(sub_name+".srt", 'a+', encoding="utf-8") as f: #this use to append
