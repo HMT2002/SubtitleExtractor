@@ -30,17 +30,17 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.panel1 = new System.Windows.Forms.Panel();
+            this.labelCrop = new System.Windows.Forms.Label();
             this.labelYScreen = new System.Windows.Forms.Label();
             this.labelXScreen = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.textBoxExtractFolder = new System.Windows.Forms.TextBox();
             this.videoViewMain = new LibVLCSharp.WinForms.VideoView();
             this.tkBrVolume = new System.Windows.Forms.TrackBar();
-            this.btnPause = new System.Windows.Forms.Button();
             this.tkBrDuration = new System.Windows.Forms.TrackBar();
-            this.btnStart = new System.Windows.Forms.Button();
             this.textBoxCropHeight = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.buttonTestcrop = new System.Windows.Forms.Button();
             this.checkBoxFullWidthCrop = new System.Windows.Forms.CheckBox();
             this.checkBoxFullHeightCrop = new System.Windows.Forms.CheckBox();
             this.label10 = new System.Windows.Forms.Label();
@@ -51,14 +51,12 @@
             this.textBoxCropX = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.pictureBoxCrop = new System.Windows.Forms.PictureBox();
             this.textBoxCropFolder = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
             this.radioButtonEasyOCR = new System.Windows.Forms.RadioButton();
             this.radioButtonTesseract = new System.Windows.Forms.RadioButton();
             this.label5 = new System.Windows.Forms.Label();
-            this.pictureBoxOCR = new System.Windows.Forms.PictureBox();
             this.textBoxOCR = new System.Windows.Forms.TextBox();
             this.button2 = new System.Windows.Forms.Button();
             this.richTextBoxStatus = new System.Windows.Forms.RichTextBox();
@@ -66,14 +64,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton7 = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton12 = new System.Windows.Forms.ToolStripButton();
             this.panel4 = new System.Windows.Forms.Panel();
             this.labelGrayScaleTestID = new System.Windows.Forms.Label();
             this.buttonQuickTestOCR = new System.Windows.Forms.Button();
@@ -86,27 +77,40 @@
             this.checkBoxGrayscale = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.textBoxGrayScaleOutput = new System.Windows.Forms.TextBox();
-            this.pictureBoxGrayscale = new System.Windows.Forms.PictureBox();
             this.textBoxGrayScaleInput = new System.Windows.Forms.TextBox();
             this.buttonGrayscale = new System.Windows.Forms.Button();
-            this.labelCrop = new System.Windows.Forms.Label();
+            this.pictureBoxGrayscale = new System.Windows.Forms.PictureBox();
+            this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton7 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton12 = new System.Windows.Forms.ToolStripButton();
+            this.pictureBoxOCR = new System.Windows.Forms.PictureBox();
+            this.pictureBoxCrop = new System.Windows.Forms.PictureBox();
+            this.pictureBoxLoading = new System.Windows.Forms.PictureBox();
+            this.btnPause = new System.Windows.Forms.Button();
+            this.btnStart = new System.Windows.Forms.Button();
             this.transparentPanelVideo = new SubtitleExtractor.TransparentPanel();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.videoViewMain)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tkBrVolume)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tkBrDuration)).BeginInit();
             this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxCrop)).BeginInit();
             this.panel3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOCR)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxGrayscale)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOCR)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxCrop)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLoading)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.pictureBoxLoading);
             this.panel1.Controls.Add(this.labelCrop);
             this.panel1.Controls.Add(this.transparentPanelVideo);
             this.panel1.Controls.Add(this.labelYScreen);
@@ -120,13 +124,22 @@
             this.panel1.Controls.Add(this.btnStart);
             this.panel1.Location = new System.Drawing.Point(12, 42);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(599, 391);
+            this.panel1.Size = new System.Drawing.Size(599, 418);
             this.panel1.TabIndex = 0;
+            // 
+            // labelCrop
+            // 
+            this.labelCrop.AutoSize = true;
+            this.labelCrop.Location = new System.Drawing.Point(17, 367);
+            this.labelCrop.Name = "labelCrop";
+            this.labelCrop.Size = new System.Drawing.Size(35, 13);
+            this.labelCrop.TabIndex = 28;
+            this.labelCrop.Text = "Crop: ";
             // 
             // labelYScreen
             // 
             this.labelYScreen.AutoSize = true;
-            this.labelYScreen.Location = new System.Drawing.Point(398, 356);
+            this.labelYScreen.Location = new System.Drawing.Point(398, 381);
             this.labelYScreen.Name = "labelYScreen";
             this.labelYScreen.Size = new System.Drawing.Size(23, 13);
             this.labelYScreen.TabIndex = 26;
@@ -135,7 +148,7 @@
             // labelXScreen
             // 
             this.labelXScreen.AutoSize = true;
-            this.labelXScreen.Location = new System.Drawing.Point(398, 341);
+            this.labelXScreen.Location = new System.Drawing.Point(398, 366);
             this.labelXScreen.Name = "labelXScreen";
             this.labelXScreen.Size = new System.Drawing.Size(20, 13);
             this.labelXScreen.TabIndex = 25;
@@ -154,7 +167,7 @@
             // 
             this.textBoxExtractFolder.Location = new System.Drawing.Point(43, 3);
             this.textBoxExtractFolder.Name = "textBoxExtractFolder";
-            this.textBoxExtractFolder.Size = new System.Drawing.Size(510, 20);
+            this.textBoxExtractFolder.Size = new System.Drawing.Size(400, 20);
             this.textBoxExtractFolder.TabIndex = 4;
             // 
             // videoViewMain
@@ -183,16 +196,6 @@
             this.tkBrVolume.Value = 70;
             this.tkBrVolume.Scroll += new System.EventHandler(this.tkBrVolume_Scroll);
             // 
-            // btnPause
-            // 
-            this.btnPause.Image = global::SubtitleExtractor.Properties.Resources.icon_pause_64;
-            this.btnPause.Location = new System.Drawing.Point(290, 342);
-            this.btnPause.Name = "btnPause";
-            this.btnPause.Size = new System.Drawing.Size(60, 40);
-            this.btnPause.TabIndex = 23;
-            this.btnPause.UseVisualStyleBackColor = true;
-            this.btnPause.Click += new System.EventHandler(this.btnPause_Click);
-            // 
             // tkBrDuration
             // 
             this.tkBrDuration.AutoSize = false;
@@ -205,17 +208,6 @@
             this.tkBrDuration.TickStyle = System.Windows.Forms.TickStyle.None;
             this.tkBrDuration.Scroll += new System.EventHandler(this.tkBrDuration_Scroll);
             // 
-            // btnStart
-            // 
-            this.btnStart.Image = ((System.Drawing.Image)(resources.GetObject("btnStart.Image")));
-            this.btnStart.Location = new System.Drawing.Point(224, 342);
-            this.btnStart.Name = "btnStart";
-            this.btnStart.Size = new System.Drawing.Size(60, 40);
-            this.btnStart.TabIndex = 22;
-            this.btnStart.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
-            this.btnStart.UseVisualStyleBackColor = true;
-            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
-            // 
             // textBoxCropHeight
             // 
             this.textBoxCropHeight.Location = new System.Drawing.Point(179, 135);
@@ -226,6 +218,7 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.buttonTestcrop);
             this.panel2.Controls.Add(this.checkBoxFullWidthCrop);
             this.panel2.Controls.Add(this.checkBoxFullHeightCrop);
             this.panel2.Controls.Add(this.label10);
@@ -242,8 +235,18 @@
             this.panel2.Controls.Add(this.button3);
             this.panel2.Location = new System.Drawing.Point(617, 42);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(377, 182);
+            this.panel2.Size = new System.Drawing.Size(377, 209);
             this.panel2.TabIndex = 1;
+            // 
+            // buttonTestcrop
+            // 
+            this.buttonTestcrop.Location = new System.Drawing.Point(300, 182);
+            this.buttonTestcrop.Name = "buttonTestcrop";
+            this.buttonTestcrop.Size = new System.Drawing.Size(65, 20);
+            this.buttonTestcrop.TabIndex = 34;
+            this.buttonTestcrop.Text = "Test crop";
+            this.buttonTestcrop.UseVisualStyleBackColor = true;
+            this.buttonTestcrop.Click += new System.EventHandler(this.buttonTestcrop_Click);
             // 
             // checkBoxFullWidthCrop
             // 
@@ -333,16 +336,6 @@
             this.label4.TabIndex = 14;
             this.label4.Text = "Input:";
             // 
-            // pictureBoxCrop
-            // 
-            this.pictureBoxCrop.BackgroundImage = global::SubtitleExtractor.Properties.Resources.crop_edit_interface_snniping_tool_cropping_reduce_64;
-            this.pictureBoxCrop.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.pictureBoxCrop.Location = new System.Drawing.Point(15, 29);
-            this.pictureBoxCrop.Name = "pictureBoxCrop";
-            this.pictureBoxCrop.Size = new System.Drawing.Size(350, 100);
-            this.pictureBoxCrop.TabIndex = 4;
-            this.pictureBoxCrop.TabStop = false;
-            // 
             // textBoxCropFolder
             // 
             this.textBoxCropFolder.Location = new System.Drawing.Point(52, 3);
@@ -370,7 +363,7 @@
             this.panel3.Controls.Add(this.button2);
             this.panel3.Location = new System.Drawing.Point(1000, 42);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(377, 179);
+            this.panel3.Size = new System.Drawing.Size(377, 209);
             this.panel3.TabIndex = 1;
             // 
             // radioButtonEasyOCR
@@ -405,16 +398,6 @@
             this.label5.TabIndex = 14;
             this.label5.Text = "Input:";
             // 
-            // pictureBoxOCR
-            // 
-            this.pictureBoxOCR.BackgroundImage = global::SubtitleExtractor.Properties.Resources.document_scanning_QR_code_barcode_OCR_image_scanning__64;
-            this.pictureBoxOCR.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.pictureBoxOCR.Location = new System.Drawing.Point(15, 29);
-            this.pictureBoxOCR.Name = "pictureBoxOCR";
-            this.pictureBoxOCR.Size = new System.Drawing.Size(350, 100);
-            this.pictureBoxOCR.TabIndex = 5;
-            this.pictureBoxOCR.TabStop = false;
-            // 
             // textBoxOCR
             // 
             this.textBoxOCR.Location = new System.Drawing.Point(52, 3);
@@ -434,7 +417,7 @@
             // 
             // richTextBoxStatus
             // 
-            this.richTextBoxStatus.Location = new System.Drawing.Point(12, 439);
+            this.richTextBoxStatus.Location = new System.Drawing.Point(12, 466);
             this.richTextBoxStatus.Name = "richTextBoxStatus";
             this.richTextBoxStatus.Size = new System.Drawing.Size(599, 110);
             this.richTextBoxStatus.TabIndex = 3;
@@ -452,7 +435,7 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripProgressBar1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 563);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 583);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(1389, 22);
             this.statusStrip1.TabIndex = 4;
@@ -481,69 +464,10 @@
             this.toolStrip1.TabIndex = 6;
             this.toolStrip1.Text = "toolStrip1";
             // 
-            // toolStripButton6
-            // 
-            this.toolStripButton6.Image = global::SubtitleExtractor.Properties.Resources._698831;
-            this.toolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton6.Name = "toolStripButton6";
-            this.toolStripButton6.Size = new System.Drawing.Size(65, 36);
-            this.toolStripButton6.Text = "Add";
-            this.toolStripButton6.Click += new System.EventHandler(this.toolStripButton6_Click);
-            // 
-            // toolStripButton7
-            // 
-            this.toolStripButton7.Image = global::SubtitleExtractor.Properties.Resources.focus_area_screenshot_take_picture_photography_64;
-            this.toolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton7.Name = "toolStripButton7";
-            this.toolStripButton7.Size = new System.Drawing.Size(79, 36);
-            this.toolStripButton7.Text = "Extract";
-            this.toolStripButton7.Click += new System.EventHandler(this.toolStripButton7_Click);
-            // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(6, 39);
-            // 
-            // toolStripButton1
-            // 
-            this.toolStripButton1.Image = global::SubtitleExtractor.Properties.Resources.files_31_64;
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(71, 36);
-            this.toolStripButton1.Text = "Copy";
-            // 
-            // toolStripButton2
-            // 
-            this.toolStripButton2.Image = global::SubtitleExtractor.Properties.Resources.scissorregular_106276;
-            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(62, 36);
-            this.toolStripButton2.Text = "Cut";
-            // 
-            // toolStripButton3
-            // 
-            this.toolStripButton3.Image = global::SubtitleExtractor.Properties.Resources.Paste_26994;
-            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(71, 36);
-            this.toolStripButton3.Text = "Paste";
-            // 
-            // toolStripButton4
-            // 
-            this.toolStripButton4.Image = global::SubtitleExtractor.Properties.Resources.delete_icon_129320;
-            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton4.Name = "toolStripButton4";
-            this.toolStripButton4.Size = new System.Drawing.Size(76, 36);
-            this.toolStripButton4.Text = "Delete";
-            // 
-            // toolStripButton12
-            // 
-            this.toolStripButton12.Image = global::SubtitleExtractor.Properties.Resources.refresh_14433;
-            this.toolStripButton12.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton12.Name = "toolStripButton12";
-            this.toolStripButton12.Size = new System.Drawing.Size(82, 36);
-            this.toolStripButton12.Text = "Refresh";
-            this.toolStripButton12.Click += new System.EventHandler(this.toolStripButton12_Click);
             // 
             // panel4
             // 
@@ -561,7 +485,7 @@
             this.panel4.Controls.Add(this.pictureBoxGrayscale);
             this.panel4.Controls.Add(this.textBoxGrayScaleInput);
             this.panel4.Controls.Add(this.buttonGrayscale);
-            this.panel4.Location = new System.Drawing.Point(617, 230);
+            this.panel4.Location = new System.Drawing.Point(617, 257);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(760, 319);
             this.panel4.TabIndex = 5;
@@ -670,16 +594,6 @@
             this.textBoxGrayScaleOutput.Size = new System.Drawing.Size(692, 20);
             this.textBoxGrayScaleOutput.TabIndex = 7;
             // 
-            // pictureBoxGrayscale
-            // 
-            this.pictureBoxGrayscale.BackgroundImage = global::SubtitleExtractor.Properties.Resources.contrast_64;
-            this.pictureBoxGrayscale.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.pictureBoxGrayscale.Location = new System.Drawing.Point(8, 56);
-            this.pictureBoxGrayscale.Name = "pictureBoxGrayscale";
-            this.pictureBoxGrayscale.Size = new System.Drawing.Size(740, 132);
-            this.pictureBoxGrayscale.TabIndex = 4;
-            this.pictureBoxGrayscale.TabStop = false;
-            // 
             // textBoxGrayScaleInput
             // 
             this.textBoxGrayScaleInput.Location = new System.Drawing.Point(56, 30);
@@ -697,14 +611,125 @@
             this.buttonGrayscale.UseVisualStyleBackColor = true;
             this.buttonGrayscale.Click += new System.EventHandler(this.button1_Click);
             // 
-            // labelCrop
+            // pictureBoxGrayscale
             // 
-            this.labelCrop.AutoSize = true;
-            this.labelCrop.Location = new System.Drawing.Point(17, 342);
-            this.labelCrop.Name = "labelCrop";
-            this.labelCrop.Size = new System.Drawing.Size(35, 13);
-            this.labelCrop.TabIndex = 28;
-            this.labelCrop.Text = "Crop: ";
+            this.pictureBoxGrayscale.BackgroundImage = global::SubtitleExtractor.Properties.Resources.contrast_64;
+            this.pictureBoxGrayscale.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.pictureBoxGrayscale.Location = new System.Drawing.Point(8, 56);
+            this.pictureBoxGrayscale.Name = "pictureBoxGrayscale";
+            this.pictureBoxGrayscale.Size = new System.Drawing.Size(740, 132);
+            this.pictureBoxGrayscale.TabIndex = 4;
+            this.pictureBoxGrayscale.TabStop = false;
+            // 
+            // toolStripButton6
+            // 
+            this.toolStripButton6.Image = global::SubtitleExtractor.Properties.Resources._698831;
+            this.toolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton6.Name = "toolStripButton6";
+            this.toolStripButton6.Size = new System.Drawing.Size(65, 36);
+            this.toolStripButton6.Text = "Add";
+            this.toolStripButton6.Click += new System.EventHandler(this.toolStripButton6_Click);
+            // 
+            // toolStripButton7
+            // 
+            this.toolStripButton7.Image = global::SubtitleExtractor.Properties.Resources.focus_area_screenshot_take_picture_photography_64;
+            this.toolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton7.Name = "toolStripButton7";
+            this.toolStripButton7.Size = new System.Drawing.Size(79, 36);
+            this.toolStripButton7.Text = "Extract";
+            this.toolStripButton7.Click += new System.EventHandler(this.toolStripButton7_Click);
+            // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.Image = global::SubtitleExtractor.Properties.Resources.files_31_64;
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(71, 36);
+            this.toolStripButton1.Text = "Copy";
+            // 
+            // toolStripButton2
+            // 
+            this.toolStripButton2.Image = global::SubtitleExtractor.Properties.Resources.scissorregular_106276;
+            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton2.Name = "toolStripButton2";
+            this.toolStripButton2.Size = new System.Drawing.Size(62, 36);
+            this.toolStripButton2.Text = "Cut";
+            // 
+            // toolStripButton3
+            // 
+            this.toolStripButton3.Image = global::SubtitleExtractor.Properties.Resources.Paste_26994;
+            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton3.Name = "toolStripButton3";
+            this.toolStripButton3.Size = new System.Drawing.Size(71, 36);
+            this.toolStripButton3.Text = "Paste";
+            // 
+            // toolStripButton4
+            // 
+            this.toolStripButton4.Image = global::SubtitleExtractor.Properties.Resources.delete_icon_129320;
+            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton4.Name = "toolStripButton4";
+            this.toolStripButton4.Size = new System.Drawing.Size(76, 36);
+            this.toolStripButton4.Text = "Delete";
+            // 
+            // toolStripButton12
+            // 
+            this.toolStripButton12.Image = global::SubtitleExtractor.Properties.Resources.refresh_14433;
+            this.toolStripButton12.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton12.Name = "toolStripButton12";
+            this.toolStripButton12.Size = new System.Drawing.Size(82, 36);
+            this.toolStripButton12.Text = "Refresh";
+            this.toolStripButton12.Click += new System.EventHandler(this.toolStripButton12_Click);
+            // 
+            // pictureBoxOCR
+            // 
+            this.pictureBoxOCR.BackgroundImage = global::SubtitleExtractor.Properties.Resources.document_scanning_QR_code_barcode_OCR_image_scanning__64;
+            this.pictureBoxOCR.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.pictureBoxOCR.Location = new System.Drawing.Point(15, 29);
+            this.pictureBoxOCR.Name = "pictureBoxOCR";
+            this.pictureBoxOCR.Size = new System.Drawing.Size(350, 100);
+            this.pictureBoxOCR.TabIndex = 5;
+            this.pictureBoxOCR.TabStop = false;
+            // 
+            // pictureBoxCrop
+            // 
+            this.pictureBoxCrop.BackgroundImage = global::SubtitleExtractor.Properties.Resources.crop_edit_interface_snniping_tool_cropping_reduce_64;
+            this.pictureBoxCrop.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.pictureBoxCrop.Location = new System.Drawing.Point(15, 29);
+            this.pictureBoxCrop.Name = "pictureBoxCrop";
+            this.pictureBoxCrop.Size = new System.Drawing.Size(350, 100);
+            this.pictureBoxCrop.TabIndex = 4;
+            this.pictureBoxCrop.TabStop = false;
+            // 
+            // pictureBoxLoading
+            // 
+            this.pictureBoxLoading.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.pictureBoxLoading.Location = new System.Drawing.Point(545, 366);
+            this.pictureBoxLoading.Name = "pictureBoxLoading";
+            this.pictureBoxLoading.Size = new System.Drawing.Size(45, 45);
+            this.pictureBoxLoading.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBoxLoading.TabIndex = 29;
+            this.pictureBoxLoading.TabStop = false;
+            // 
+            // btnPause
+            // 
+            this.btnPause.Image = global::SubtitleExtractor.Properties.Resources.icon_pause_64;
+            this.btnPause.Location = new System.Drawing.Point(290, 367);
+            this.btnPause.Name = "btnPause";
+            this.btnPause.Size = new System.Drawing.Size(60, 40);
+            this.btnPause.TabIndex = 23;
+            this.btnPause.UseVisualStyleBackColor = true;
+            this.btnPause.Click += new System.EventHandler(this.btnPause_Click);
+            // 
+            // btnStart
+            // 
+            this.btnStart.Image = ((System.Drawing.Image)(resources.GetObject("btnStart.Image")));
+            this.btnStart.Location = new System.Drawing.Point(224, 367);
+            this.btnStart.Name = "btnStart";
+            this.btnStart.Size = new System.Drawing.Size(60, 40);
+            this.btnStart.TabIndex = 22;
+            this.btnStart.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            this.btnStart.UseVisualStyleBackColor = true;
+            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
             // 
             // transparentPanelVideo
             // 
@@ -718,7 +743,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1389, 585);
+            this.ClientSize = new System.Drawing.Size(1389, 605);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.statusStrip1);
@@ -728,6 +753,7 @@
             this.Controls.Add(this.panel1);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -736,10 +762,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.tkBrDuration)).EndInit();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxCrop)).EndInit();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOCR)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
@@ -747,6 +771,9 @@
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxGrayscale)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOCR)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxCrop)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLoading)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -816,6 +843,8 @@
         private System.Windows.Forms.Label labelXScreen;
         private TransparentPanel transparentPanelVideo;
         private System.Windows.Forms.Label labelCrop;
+        private System.Windows.Forms.Button buttonTestcrop;
+        private System.Windows.Forms.PictureBox pictureBoxLoading;
     }
 }
 

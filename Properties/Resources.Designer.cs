@@ -63,6 +63,16 @@ namespace SubtitleExtractor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _1398911_correct_mark_success_tick_valid_icon {
+            get {
+                object obj = ResourceManager.GetObject("1398911_correct_mark_success_tick_valid_icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap _698831 {
             get {
                 object obj = ResourceManager.GetObject("698831", resourceCulture);
@@ -146,6 +156,16 @@ namespace SubtitleExtractor.Properties {
         internal static System.Drawing.Bitmap icon_pause_64 {
             get {
                 object obj = ResourceManager.GetObject("icon-pause-64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap loading_gif {
+            get {
+                object obj = ResourceManager.GetObject("loading-gif", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

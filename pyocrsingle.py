@@ -24,8 +24,8 @@ re = open(single_image+"_quicktest_easyocr.txt", "w")
 re.write("")
 re.close()
 # init easyocr
-reader = easyocr.Reader(['vi']) # this needs to run only once to load the model into memory
-# reader = easyocr.Reader(['vi','en'])
+# reader = easyocr.Reader(['vi']) # this needs to run only once to load the model into memory
+reader = easyocr.Reader(['vi','en'])
 result = reader.readtext(single_image)
 # result.reverse()
 for line in result:

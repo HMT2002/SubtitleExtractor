@@ -70,8 +70,8 @@ folder_image=args["folder"]
 sub_name=args["subname"]
 
 # init easyocr
-reader = easyocr.Reader(['vi']) # this needs to run only once to load the model into memory
-# reader = easyocr.Reader(['vi','en'])
+# reader = easyocr.Reader(['vi']) # this needs to run only once to load the model into memory
+reader = easyocr.Reader(['vi','en'])
 step=0
 index=1
 #read files in folder
@@ -106,16 +106,17 @@ for file in dir_list:
       if len(result[0])>1:
          sub+=line[1]+"\\N"
 
-      fullsub=format_a_line(sub,step,step+500,index)
+      fullsub=format_a_line(sub,step,step+int(round(1000/2)),index)
       with open(sub_name+"_easyocr.srt", 'a+', encoding="utf-8") as f: #this use to append
          #with open("sub.srt", 'w', encoding="utf-8") as f: #this use to overwrite
          f.write(fullsub)
          index=index+1
 
-  step=step+500
+  step=step+int(round(1000/2))
 
 # show the output images
 # cv2.imshow("Image Input", images)
 # cv2.imshow("Output In Grayscale", gray)
 # cv2.waitKey(0)
 #input("Press Enter to continue...")
+print(r"@___Finished___@", flush=True)

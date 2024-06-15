@@ -4,11 +4,13 @@ using Emgu.CV;
 using Emgu.CV.Flann;
 using Emgu.CV.ImgHash;
 using Emgu.CV.Structure;
+using Emgu.CV.XFeatures2D;
 using FFMpegCore;
 using LibVLCSharp.Shared;
 using LibVLCSharp.WinForms;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -16,6 +18,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
@@ -28,7 +31,6 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 using Tesseract;
 using static System.Net.Mime.MediaTypeNames;
-
 namespace SubtitleExtractor
 {
     public partial class Form1 : Form
@@ -96,10 +98,21 @@ namespace SubtitleExtractor
 
                     process.Start();
 
-                    //process.WaitForExit();
+                    process.WaitForExit();
 
-                    textBoxCropFolder.Text = output_filename;
+                    textBoxCropFolder.Text = "_extract_" + output_filename;
                     richTextBoxStatus.Text += "Finish extract!\n";
+                    if (pictureBoxLoading.Image != null)
+                    {
+                        pictureBoxLoading.Image.Dispose();
+                        pictureBoxLoading.Image = null;
+                        pictureBoxLoading.Update();
+                        pictureBoxLoading.Image = Properties.Resources._1398911_correct_mark_success_tick_valid_icon;
+                        pictureBoxLoading.Refresh();
+
+                    }
+
+
                 });
                 t.Start();
 
@@ -134,7 +147,7 @@ namespace SubtitleExtractor
         public void ExtractScreenshot(string filename, int shotNumberPerSecond)
         {
             string fileID = RandomString(5);
-            string folderpath = System.Windows.Forms.Application.StartupPath + @"\" + fileID;
+            string folderpath = System.Windows.Forms.Application.StartupPath + @"\_extract_" + fileID;
             output_filename = fileID;
 
             bool exists = System.IO.Directory.Exists(folderpath);
@@ -142,12 +155,14 @@ namespace SubtitleExtractor
             {
                 System.IO.Directory.CreateDirectory(folderpath);
             }
-            string strParam = FFMPEG_PATH + " -i \"" + filename + "\" -vf fps=" + shotNumberPerSecond + " \"" + folderpath + "\\out%05d.png\"";
+            string strParam = FFMPEG_PATH + " -i \"" + filename + "\" -vf fps=" + shotNumberPerSecond + " \"" + folderpath + "\\out%07d.png\"";
             //if (MessageBox.Show("", strParam, MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK)
             //{
             //    Clipboard.SetText(strParam);
             //}
-
+            richTextBoxStatus.Text += "\nStart extracting...\n";
+            pictureBoxLoading.Image = Properties.Resources.loading_gif;
+            pictureBoxLoading.Refresh();
             process(strParam);
 
         }
@@ -175,31 +190,91 @@ namespace SubtitleExtractor
                     start.RedirectStandardError = true;
                     //start.CreateNoWindow = true;
 
-
-                    using (Process process = new Process())
+                    Process process = new Process();
+                    process.StartInfo = start;
+                    process.EnableRaisingEvents = true;
+                    process.ErrorDataReceived += Process_OutputDataReceived;
+                    process.OutputDataReceived += Process_OutputDataReceived;
+                    process.Exited += delegate
                     {
-                        process.StartInfo = start;
-                        process.EnableRaisingEvents = true;
-                        process.ErrorDataReceived += Process_OutputDataReceived;
-                        process.OutputDataReceived += Process_OutputDataReceived;
-                        process.Start();
-                        process.BeginErrorReadLine();
-                        process.BeginOutputReadLine();
-                        //process.WaitForExit();
+                        richTextBoxStatus.Text += "\nFinish EasyOCR!\n";
+                        if (pictureBoxLoading.Image != null)
+                        {
+                            pictureBoxLoading.Image.Dispose();
+                            pictureBoxLoading.Image = Properties.Resources._1398911_correct_mark_success_tick_valid_icon;
+                            pictureBoxLoading.Refresh();
+                            pictureBoxOCR.BackgroundImage = Properties.Resources._1398911_correct_mark_success_tick_valid_icon;
+                            pictureBoxOCR.Refresh();
+                        }
+                    };
+                    process.Start();
+                    process.BeginErrorReadLine();
+                    process.BeginOutputReadLine();
 
-                        //using (StreamReader reader = process.StandardOutput)
-                        //{
-                        //    string result = reader.ReadToEnd();
-                        //    Console.Write(result);
-                        //    byte[] bytes = Encoding.Default.GetBytes(result);
-                        //    string myString = Encoding.UTF8.GetString(bytes);
-                        //    richTextBoxStatus.Text += myString + "\n";
+                    process.WaitForExit();
 
-                        //}
-
+                    richTextBoxStatus.Text += "\nFinish EasyOCR!\n";
+                    if (pictureBoxLoading.Image != null)
+                    {
+                        pictureBoxLoading.Image.Dispose();
+                        pictureBoxLoading.Image = Properties.Resources._1398911_correct_mark_success_tick_valid_icon;
+                        pictureBoxLoading.Update();
+                        pictureBoxOCR.BackgroundImage = Properties.Resources._1398911_correct_mark_success_tick_valid_icon;
+                        pictureBoxOCR.Refresh();
 
                     }
-                    Console.Read();
+                    pictureBoxCrop.Image = Properties.Resources._1398911_correct_mark_success_tick_valid_icon;
+                    pictureBoxCrop.Refresh();
+
+                    pictureBoxOCR.BackgroundImage = Properties.Resources._1398911_correct_mark_success_tick_valid_icon;
+                    pictureBoxOCR.Refresh();
+                    //using (StreamReader reader = process.StandardOutput)
+                    //{
+                    //    string result = reader.ReadToEnd();
+                    //    Console.Write(result);
+                    //    byte[] bytes = Encoding.Default.GetBytes(result);
+                    //    string myString = Encoding.UTF8.GetString(bytes);
+                    //    richTextBoxStatus.Text += myString + "\n";
+
+                    //}
+
+                    //using (Process process = new Process())
+                    //{
+                    //    process.StartInfo = start;
+                    //    process.EnableRaisingEvents = true;
+                    //    process.ErrorDataReceived += Process_OutputDataReceived;
+                    //    process.OutputDataReceived += Process_OutputDataReceived;
+                    //    process.Exited += delegate
+                    //    {
+                    //        richTextBoxStatus.Text += "\nFinish EasyOCR!\n";
+                    //        if (pictureBoxLoading.Image != null)
+                    //        {
+                    //            pictureBoxLoading.Image.Dispose();
+                    //            pictureBoxLoading.Image = null;
+                    //            pictureBoxLoading.Update();
+                    //pictureBoxCrop.Refresh();
+                    //pictureBoxCrop.Image = Properties.Resources._1398911_correct_mark_success_tick_valid_icon;
+
+                    //        }
+                    //    };
+                    //    process.Start();
+                    //    process.BeginErrorReadLine();
+                    //    process.BeginOutputReadLine();
+
+                    //    process.WaitForExit();
+
+                    //    //using (StreamReader reader = process.StandardOutput)
+                    //    //{
+                    //    //    string result = reader.ReadToEnd();
+                    //    //    Console.Write(result);
+                    //    //    byte[] bytes = Encoding.Default.GetBytes(result);
+                    //    //    string myString = Encoding.UTF8.GetString(bytes);
+                    //    //    richTextBoxStatus.Text += myString + "\n";
+
+                    //    //}
+
+                    //}
+                    //Console.Read();
 
                 });
                 t.Start();
@@ -221,6 +296,22 @@ namespace SubtitleExtractor
                 //richTextBoxStatus.Text += myString + "\n"+ e.Data + "\n";
                 richTextBoxStatus.Text += myString + "\n";
                 //toolStripProgressBar1.PerformStep();
+                if (myString.CompareTo(@"@___Finished___@") == 0)
+                {
+                    richTextBoxStatus.Text += "\nFinish EasyOCR!\n";
+                    if (pictureBoxLoading.Image != null)
+                    {
+                        pictureBoxLoading.Image = Properties.Resources._1398911_correct_mark_success_tick_valid_icon;
+                        pictureBoxLoading.Refresh();
+                        pictureBoxOCR.BackgroundImage = Properties.Resources._1398911_correct_mark_success_tick_valid_icon;
+                        pictureBoxOCR.Refresh();
+                        //pictureBoxLoading.Update();
+
+
+                    }
+
+                }
+
             }
 
         }
@@ -247,7 +338,7 @@ namespace SubtitleExtractor
 
 
         }
-        public void CropPic(string input_filepath, string output_filepath, int index)
+        public void CropPic(string input_filepath, string output_filepath)
         {
             try
             {
@@ -287,7 +378,11 @@ namespace SubtitleExtractor
                 }
                 Rectangle myROI = new Rectangle(input_crop_X, input_crop_Y, input_crop_width, input_crop_height);
                 Mat cropped_img = new Mat(img, myROI);
-                cropped_img.Save(output_filepath);
+                if (output_filepath != null)
+                {
+                    cropped_img.Save(output_filepath);
+
+                }
                 SwitchImageHighSpeed(cropped_img.ToBitmap(), pictureBoxCrop, 200);
 
 
@@ -360,6 +455,7 @@ namespace SubtitleExtractor
                 //bitmap = grImage;
             }
             pictureBoxGrayscale.BackgroundImage = bitmap;
+            pictureBoxGrayscale.Refresh();
         }
         private void checkBoxGrayscale_CheckedChanged(object sender, EventArgs e)
         {
@@ -376,6 +472,11 @@ namespace SubtitleExtractor
         {
             bool useSISThreshHold = checkBoxThreshhold.Checked;
             bool useGrayscale = checkBoxGrayscale.Checked;
+            if (!useGrayscale && !useSISThreshHold)
+            {
+
+                return;
+            }
             Bitmap bitmap = new Bitmap(input_filepath);
             Grayscale grayFilter = new Grayscale(0.2125, 0.7154, 0.0721);
             if (useGrayscale)
@@ -403,6 +504,7 @@ namespace SubtitleExtractor
             }
 
             bitmap.Save(output_filepath);
+            bitmap.Dispose();
 
         }
         private string OCR(Bitmap b)
@@ -410,7 +512,7 @@ namespace SubtitleExtractor
             string res = "";
             try
             {
-                using (var engine = new TesseractEngine("./tessdata", "vie+jpn", EngineMode.Default))
+                using (var engine = new TesseractEngine("./tessdata", "eng", EngineMode.Default))
                 {
                     using (var page = engine.Process(b, PageSegMode.Auto))
                         res = page.GetText();
@@ -426,6 +528,7 @@ namespace SubtitleExtractor
         {
             pictureBox.BackgroundImage = bitmap;
             pictureBox.Refresh();
+            //bitmap.Dispose();
             await Task.Delay(delayMs);//<--Note Task.Delay don't block UI
         }
         public void GrayScaleFolder(string inputFolder, string outputFolder)
@@ -467,10 +570,16 @@ namespace SubtitleExtractor
             {
                 return;
             }
+
+
             string folderOutput = textBoxGrayScaleInput.Text;
 
             bool useSISThreshHold = checkBoxThreshhold.Checked;
             bool useGrayscale = checkBoxGrayscale.Checked;
+            if (!useGrayscale && !useSISThreshHold)
+            {
+                return;
+            }
             if (useGrayscale)
             {
                 folderOutput += "_grayscale";
@@ -485,11 +594,20 @@ namespace SubtitleExtractor
                 folderOutput += "_grayscale_sisthreshold";
 
             }
+            pictureBoxLoading.Image = Properties.Resources.loading_gif;
+            pictureBoxLoading.Refresh();
+            Thread t = new Thread(() =>
+            {
+                GrayScaleFolder(textBoxGrayScaleInput.Text, folderOutput);
+                textBoxGrayScaleOutput.Text = folderOutput;
+                textBoxOCR.Text = folderOutput;
+                pictureBoxLoading.Image = Properties.Resources._1398911_correct_mark_success_tick_valid_icon;
+                pictureBoxLoading.Refresh();
+            });
+            t.Start();
 
 
-            GrayScaleFolder(textBoxGrayScaleInput.Text, folderOutput);
-            textBoxGrayScaleOutput.Text = folderOutput;
-            textBoxOCR.Text = folderOutput;
+
         }
         private void button2_Click(object sender, EventArgs e)
         {
@@ -500,9 +618,13 @@ namespace SubtitleExtractor
             }
             toolStripProgressBar1.Maximum = input_folder.GetFiles().Length;
             toolStripProgressBar1.Value = 0;
-
+            pictureBoxLoading.Image = Properties.Resources.loading_gif;
+            pictureBoxOCR.BackgroundImage = Properties.Resources.loading_gif;
+            pictureBoxOCR.Refresh();
+            pictureBoxLoading.Refresh();
             if (radioButtonEasyOCR.Checked)
             {
+                richTextBoxStatus.Text += "\nStart EasyOCR...\n";
                 StartOCRProc(textBoxOCR.Text);
 
             }
@@ -519,18 +641,21 @@ namespace SubtitleExtractor
                         string result = OCRPic(file.FullName);
                         if (result.Trim().CompareTo("") != 0)
                         {
-                            string formatted = formatSubtitle(result, step, step + (1000/2), index);
+                            string formatted = formatSubtitle(result, step, step + (1000 / 2), index);
                             index++;
                             File.AppendAllText(System.Windows.Forms.Application.StartupPath + @"\" + textBoxOCR.Text + "_tesseract.srt", formatted);
                         }
-                        step += (1000/2);
+                        step += (1000 / 2);
                         toolStripProgressBar1.PerformStep();
                     }
                     toolStripProgressBar1.Value = 0;
+                    pictureBoxLoading.Image = Properties.Resources._1398911_correct_mark_success_tick_valid_icon;
+                    pictureBoxOCR.BackgroundImage = Properties.Resources._1398911_correct_mark_success_tick_valid_icon;
+                    pictureBoxLoading.Refresh();
+                    pictureBoxOCR.Refresh();
+
                 });
                 t.Start();
-
-
             }
             //backgroundWorker1.RunWorkerAsync();//start worker
 
@@ -693,6 +818,7 @@ namespace SubtitleExtractor
                 bitmap = grayFilter.Apply(bitmap);
             }
             pictureBoxGrayscale.BackgroundImage = bitmap;
+            pictureBoxGrayscale.Refresh();
         }
         private void buttonQuickTestOCR_Click(object sender, EventArgs e)
         {
@@ -806,16 +932,27 @@ namespace SubtitleExtractor
 
                 toolStripProgressBar1.Maximum = input_folder.GetFiles().Length;
                 toolStripProgressBar1.Value = 0;
-                int index = 0;
-                foreach (FileInfo file in input_folder.GetFiles())
+                pictureBoxLoading.Image = Properties.Resources.loading_gif;
+                pictureBoxLoading.Refresh();
+
+                Thread t = new Thread(() =>
                 {
-                    CropPic(file.FullName, source_folder + @"_cropped\" + file.Name, index);
-                    index++;
-                    toolStripProgressBar1.PerformStep();
-                }
-                textBoxOCR.Text = source_folder + @"_cropped";
-                textBoxGrayScaleInput.Text = source_folder + @"_cropped";
-                toolStripProgressBar1.Value = 0;
+                    int index = 0;
+                    foreach (FileInfo file in input_folder.GetFiles())
+                    {
+                        CropPic(file.FullName, source_folder + @"_cropped\" + file.Name);
+                        index++;
+                        toolStripProgressBar1.PerformStep();
+                    }
+                    textBoxOCR.Text = source_folder + @"_cropped";
+                    textBoxGrayScaleInput.Text = source_folder + @"_cropped";
+                    toolStripProgressBar1.Value = 0;
+
+                    pictureBoxLoading.Image = Properties.Resources._1398911_correct_mark_success_tick_valid_icon;
+                    pictureBoxLoading.Refresh();
+                });
+                t.Start();
+
             }
             catch (Exception ex)
             {
@@ -845,6 +982,10 @@ namespace SubtitleExtractor
             checkBoxGrayscale.Checked = false;
             checkBoxNail.Checked = false;
             checkBoxThreshhold.Checked = false;
+            pictureBoxLoading.Image.Dispose();
+            pictureBoxLoading.Image = null;
+            pictureBoxLoading.Refresh();
+
         }
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -877,7 +1018,7 @@ namespace SubtitleExtractor
 
         public const int defaultVolume = 70;
         public MediaPlayer _mp;
-        public void initPlayer()
+        public async void initPlayer()
         {
 
             _mp = new MediaPlayer(_libVLC);
@@ -904,6 +1045,7 @@ namespace SubtitleExtractor
             _mp.Playing += playerPlayingFunc;
             _mp.LengthChanged += playerLengthChangeFunc;
             _mp.TimeChanged += playerTimeChangedFunc;
+
         }
 
         public void playerMediaChangedFunc(object sender, EventArgs e)
@@ -1032,6 +1174,7 @@ namespace SubtitleExtractor
                 {
                     return;
                 }
+                //_mp.Play(new Media(_libVLC, "https://chunk.lab.zalo.ai/12e44706386dd133887c/12e44706386dd133887c", FromType.FromLocation));
                 _mp.Play(new Media(_libVLC, filepath, FromType.FromPath));
                 int i = 0;
             }
@@ -1143,8 +1286,10 @@ namespace SubtitleExtractor
         private void toolStripButton7_Click(object sender, EventArgs e)
         {
 
-
-
+            if (textBoxExtractFolder.Text.Trim().Length == 0)
+            {
+                return;
+            }
             ExtractScreenshot(textBoxExtractFolder.Text, 2);
 
 
@@ -1178,9 +1323,8 @@ namespace SubtitleExtractor
 
             labelYScreen.Text = e.X.ToString() + " : " + e.Y.ToString();
 
-            if (_mp!=null)
+            if (_mp != null)
             {
-                pictureBoxCrop.Refresh();
                 uint video_width = 0;
                 uint video_height = 0;
                 uint video_pixel = 0;
@@ -1193,34 +1337,82 @@ namespace SubtitleExtractor
                 int input_crop_Y_percentage = (int)((double)(e.Y * 100) / ctrl.Height);
                 int input_crop_X = (int)(video_width * (decimal)input_crop_X_percentage / 100);
                 int input_crop_Y = (int)(video_height * (decimal)input_crop_Y_percentage / 100);
-                int input_crop_height = (int)(video_height *(decimal) (100 - input_crop_Y_percentage) / 100);
-                int input_crop_width = (int)(video_width *(decimal) (100 - input_crop_X_percentage) / 100);
+                int input_crop_height = (int)(video_height * (decimal)(100 - input_crop_Y_percentage) / 100);
+                int input_crop_width = (int)(video_width * (decimal)(100 - input_crop_X_percentage) / 100);
                 textBoxCropX.Text = input_crop_X_percentage.ToString();
                 textBoxCropY.Text = input_crop_Y_percentage.ToString();
                 textBoxCropHeight.Text = (100 - input_crop_Y_percentage).ToString();
                 textBoxCropWidth.Text = (100 - input_crop_X_percentage).ToString();
 
                 labelCrop.Text = "X%: " + input_crop_X_percentage + "; X:" + input_crop_X + "; Y%: " + input_crop_Y_percentage + "; Y:" + input_crop_Y + "\n" + "Width: " + input_crop_width + "; Height:" + input_crop_height + "\n" + "TotalX: " + (input_crop_width + input_crop_X) + "; TotalY: " + (input_crop_height + input_crop_Y);
+
+                //var bitmap = FFMpeg.Snapshot(textBoxExtractFolder.Text, tempcropPath, new Size((int)video_width, (int)video_height), TimeSpan.FromSeconds((int)(_mp.Position*_mp.Length)));
                 _mp.TakeSnapshot(0, tempcropPath, 0, 0);
-
-
+                delete_files_path.Add(tempcropPath);
                 Rectangle myROI = new Rectangle(input_crop_X, input_crop_Y, input_crop_width, input_crop_height);
                 Mat img = CvInvoke.Imread(tempcropPath, Emgu.CV.CvEnum.ImreadModes.AnyColor);
                 Mat cropped_img = new Mat(img, myROI);
+                pictureBoxCrop.Refresh();
                 pictureBoxCrop.BackgroundImage = cropped_img.ToBitmap();
-                cropped_img.Save(System.Windows.Forms.Application.StartupPath + @"/crop_preview_" + randomID + "_cropped.png");
-
+                cropped_img.Dispose();
+                img.Dispose();
+                //cropped_img.Save(System.Windows.Forms.Application.StartupPath + @"/crop_preview_" + randomID + "_cropped.png");
                 //cropped_img.Dispose();
-                //img.Dispose();         
+                //img.Dispose();
                 //File.Delete(tempcropPath);
             }
         }
 
-        #endregion
 
         private void transparentPanelVideo_MouseClick(object sender, MouseEventArgs e)
         {
-            GetVideoCropShot(e, videoViewMain);
+            GetVideoCropShot(e, transparentPanelVideo);
         }
+
+        #endregion
+
+        private void buttonTestcrop_Click(object sender, EventArgs e)
+        {
+            string source_folder = textBoxCropFolder.Text;
+            if (source_folder.CompareTo("") == 0)
+            {
+                return;
+            }
+
+            try
+            {
+                string folder_path = System.Windows.Forms.Application.StartupPath + @"\" + source_folder;
+                DirectoryInfo input_folder = new DirectoryInfo(folder_path);
+
+                if (!input_folder.Exists)
+                {
+                    MessageBox.Show("Not found pictures path: " + folder_path);
+                    return;
+                }
+
+
+                int randomIndex = random.Next(input_folder.GetFiles().Length - 1);
+                FileInfo file = input_folder.GetFiles()[randomIndex];
+                CropPic(file.FullName, null);
+
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("The process failed: {0}", ex.Message);
+            }
+        }
+
+
+        #region Clean temp files
+        List<string> delete_files_path = new List<string>();
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            foreach (string file in delete_files_path)
+            {
+                File.Delete(file);
+            }
+        }
+        #endregion
     }
 }
