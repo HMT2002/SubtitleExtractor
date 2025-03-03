@@ -121,13 +121,12 @@
   <data name="btnStart.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        vAAADrwBlbxySQAAAUpJREFUOE+dlEtqhEAQQMvAXEbBD947/ha5guBC8Te40QNkk8VAIKCVKekSu+12
-        TBaPGaq6nmW31YCItzzPcRzHD/ovoPiaU3gZh6IoEABWwjDEtm0fu4XaIgUpDlEUbUImCAJsmuabF4kC
-        o2xZljeOQZqmq8SyrIPY8zysqmrhxQrah0CWZQeRiuM4OAzDxEXzPFvP34OMOoUkSbQSQu2axKY9Fq8N
-        RqFuCxjaiv0es2ztUH1lEplkapwOr67rHxYT26HoCvac5VzX3fb49JSZqx13Xfd4KfxLXBLquCqTXjmO
-        YynJXJH5vi+dNn2f2g5NMoY6Mo3mQXgmow+77/uvnUiSEZLQJLNtWxq9HSDGcIudnjJNRFmWz3WShJE6
-        Y4zXlzoBDI+ZQM0D0G3NIrpg7/f7Jy8QxYcigTa+Jkg6TdP7PvkfGSLefgEr4TusOHe4PgAAAABJRU5E
-        rkJggg==
+        vAAADrwBlbxySQAAAT9JREFUOE+dlMtqhTAQhmOhL6PgBd+73hZ9BcGF4hU3+gBn08WBQkGnTDCSy8Rj
+        u/ghGfk/J5OZMAB4L8sSlmX5xPUhdkjsb8dZVVXAGOOK4xj6vn8ShlswDkyS5AQKRVEEXdd920x6fN/3
+        txOY5zmHOI5jgIMggKZpdgJk/QkrisIA6fI8D+Z5XoVp2zaHgmGmLMsyAyCkZ41gW42PYzMrUIfJwlLI
+        NRYwnqF+ZATZYHocL69t2x+lhuJSKMMVTJbv+2eNL2/5FUyPD8PwfAn8S1wBUqJMVFw5cpqmhoEyUfEw
+        DJXbxv4kM7TBhDAj22gawCsYNvY4jl9aU6uPw522cV1XGT0Zdoyh2YcUDCeirmsgQEZmJ9D2fOkTICTG
+        jILxWcbXWoDwgZ2m6aGZDZMNxoG4Qei6rh/yx//AcP0LK+E7rIvMmksAAAAASUVORK5CYII=
 </value>
   </data>
   <metadata name="backgroundWorker1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
@@ -145,4 +144,7 @@ Nhưng đừng áp dụng đối với những video có font chữ sáng, sẽ 
 Và xin đừng grayscale video Bad Apple, vô nghĩa lắm.
 </value>
   </data>
+  <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>59</value>
+  </metadata>
 </root>

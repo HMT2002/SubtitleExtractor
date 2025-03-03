@@ -98,7 +98,7 @@ for file in dir_list:
   # cv2.imwrite(filename, gray)
   # os.remove(filename)
   # text = pytesseract.image_to_string(Image.open(filename),lang='vie')
-  result = reader.readtext(folder_image+"/"+file)
+  result = reader.readtext(folder_image+"/"+file,"greedy",5,1,0,None,None,1,None,True)
    # result.reverse()
   for line in result:
       sub=""

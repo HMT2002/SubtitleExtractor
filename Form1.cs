@@ -53,7 +53,7 @@ namespace SubtitleExtractor
             //Console.InputEncoding = System.Text.Encoding.UTF8;
             GlobalFFOptions.Configure(new FFOptions { BinaryFolder = @"D:\ffmpeg-app\", TemporaryFilesFolder = Environment.CurrentDirectory + "/tmp" });
         }
-        string FFMPEG_PATH = @"D:\ffmpeg-app\ffmpeg.exe";
+        string FFMPEG_PATH = @"D:\ffmpeg-full_build\bin\ffmpeg.exe";
         public Random random = new Random();
         string output_filename = "";
         string filepath = "";
@@ -160,6 +160,7 @@ namespace SubtitleExtractor
             //{
             //    Clipboard.SetText(strParam);
             //}
+            Console.WriteLine(strParam);   
             richTextBoxStatus.Text += "\nStart extracting...\n";
             pictureBoxLoading.Image = Properties.Resources.loading_gif;
             pictureBoxLoading.Refresh();
@@ -185,6 +186,7 @@ namespace SubtitleExtractor
                     start.WorkingDirectory = Environment.CurrentDirectory;
                     start.FileName = "cmd.exe";
                     start.Arguments = @"/k chcp 65001 & @echo off & python -u ../../pyocr.py --folder " + output_folder + @" --image out0064.png --subname " + output_folder;
+                    Console.WriteLine(start.Arguments);
                     start.UseShellExecute = false;
                     start.RedirectStandardOutput = true;
                     start.RedirectStandardError = true;
@@ -1414,5 +1416,10 @@ namespace SubtitleExtractor
             }
         }
         #endregion
+
+        private void trckBarCropWidth_Scroll(object sender, EventArgs e)
+        {
+            textBoxCropWidth.Text = (trckBarCropWidth.Value - Int32.Parse(textBoxCropX.Text)).ToString();
+        }
     }
 }
