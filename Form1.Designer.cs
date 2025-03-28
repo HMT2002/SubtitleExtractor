@@ -28,8 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.panel1 = new System.Windows.Forms.Panel();
+            this.labelYPercentScreen = new System.Windows.Forms.Label();
+            this.labelXPercentScreen = new System.Windows.Forms.Label();
             this.pictureBoxLoading = new System.Windows.Forms.PictureBox();
             this.labelCrop = new System.Windows.Forms.Label();
             this.transparentPanelVideo = new SubtitleExtractor.TransparentPanel();
@@ -44,6 +47,8 @@
             this.btnStart = new System.Windows.Forms.Button();
             this.textBoxCropHeight = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.trckBarCropHeight = new System.Windows.Forms.TrackBar();
+            this.trckBarCropWidth = new System.Windows.Forms.TrackBar();
             this.buttonTestcrop = new System.Windows.Forms.Button();
             this.checkBoxFullWidthCrop = new System.Windows.Forms.CheckBox();
             this.checkBoxFullHeightCrop = new System.Windows.Forms.CheckBox();
@@ -59,6 +64,11 @@
             this.textBoxCropFolder = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.label12 = new System.Windows.Forms.Label();
+            this.textBoxProject = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.richTextBoxAuthKey = new System.Windows.Forms.RichTextBox();
+            this.radioButtonGoogleCloudAIOCR = new System.Windows.Forms.RadioButton();
             this.radioButtonEasyOCR = new System.Windows.Forms.RadioButton();
             this.radioButtonTesseract = new System.Windows.Forms.RadioButton();
             this.label5 = new System.Windows.Forms.Label();
@@ -78,6 +88,7 @@
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton12 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
             this.panel4 = new System.Windows.Forms.Panel();
             this.labelGrayScaleTestID = new System.Windows.Forms.Label();
             this.buttonQuickTestOCR = new System.Windows.Forms.Button();
@@ -88,18 +99,22 @@
             this.labelGrayscaleName = new System.Windows.Forms.Label();
             this.checkBoxThreshhold = new System.Windows.Forms.CheckBox();
             this.checkBoxGrayscale = new System.Windows.Forms.CheckBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.textBoxGrayScaleOutput = new System.Windows.Forms.TextBox();
             this.pictureBoxGrayscale = new System.Windows.Forms.PictureBox();
             this.textBoxGrayScaleInput = new System.Windows.Forms.TextBox();
             this.buttonGrayscale = new System.Windows.Forms.Button();
-            this.trckBarCropWidth = new System.Windows.Forms.TrackBar();
+            this.toolTipGrayscale = new System.Windows.Forms.ToolTip(this.components);
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.treeViewLog = new System.Windows.Forms.TreeView();
+            this.label16 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLoading)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.videoViewMain)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tkBrVolume)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tkBrDuration)).BeginInit();
             this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trckBarCropHeight)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trckBarCropWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxCrop)).BeginInit();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOCR)).BeginInit();
@@ -107,11 +122,14 @@
             this.toolStrip1.SuspendLayout();
             this.panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxGrayscale)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trckBarCropWidth)).BeginInit();
+            this.panel6.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
+            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.labelYPercentScreen);
+            this.panel1.Controls.Add(this.labelXPercentScreen);
             this.panel1.Controls.Add(this.pictureBoxLoading);
             this.panel1.Controls.Add(this.labelCrop);
             this.panel1.Controls.Add(this.transparentPanelVideo);
@@ -126,13 +144,31 @@
             this.panel1.Controls.Add(this.btnStart);
             this.panel1.Location = new System.Drawing.Point(12, 42);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(599, 418);
+            this.panel1.Size = new System.Drawing.Size(507, 418);
             this.panel1.TabIndex = 0;
+            // 
+            // labelYPercentScreen
+            // 
+            this.labelYPercentScreen.AutoSize = true;
+            this.labelYPercentScreen.Location = new System.Drawing.Point(347, 381);
+            this.labelYPercentScreen.Name = "labelYPercentScreen";
+            this.labelYPercentScreen.Size = new System.Drawing.Size(31, 13);
+            this.labelYPercentScreen.TabIndex = 31;
+            this.labelYPercentScreen.Text = "%Y:  ";
+            // 
+            // labelXPercentScreen
+            // 
+            this.labelXPercentScreen.AutoSize = true;
+            this.labelXPercentScreen.Location = new System.Drawing.Point(347, 366);
+            this.labelXPercentScreen.Name = "labelXPercentScreen";
+            this.labelXPercentScreen.Size = new System.Drawing.Size(28, 13);
+            this.labelXPercentScreen.TabIndex = 30;
+            this.labelXPercentScreen.Text = "%X: ";
             // 
             // pictureBoxLoading
             // 
             this.pictureBoxLoading.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.pictureBoxLoading.Location = new System.Drawing.Point(545, 366);
+            this.pictureBoxLoading.Location = new System.Drawing.Point(451, 367);
             this.pictureBoxLoading.Name = "pictureBoxLoading";
             this.pictureBoxLoading.Size = new System.Drawing.Size(45, 45);
             this.pictureBoxLoading.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -152,14 +188,14 @@
             // 
             this.transparentPanelVideo.Location = new System.Drawing.Point(3, 38);
             this.transparentPanelVideo.Name = "transparentPanelVideo";
-            this.transparentPanelVideo.Size = new System.Drawing.Size(550, 262);
+            this.transparentPanelVideo.Size = new System.Drawing.Size(440, 262);
             this.transparentPanelVideo.TabIndex = 27;
             this.transparentPanelVideo.MouseClick += new System.Windows.Forms.MouseEventHandler(this.transparentPanelVideo_MouseClick);
             // 
             // labelYScreen
             // 
             this.labelYScreen.AutoSize = true;
-            this.labelYScreen.Location = new System.Drawing.Point(398, 381);
+            this.labelYScreen.Location = new System.Drawing.Point(270, 381);
             this.labelYScreen.Name = "labelYScreen";
             this.labelYScreen.Size = new System.Drawing.Size(23, 13);
             this.labelYScreen.TabIndex = 26;
@@ -168,7 +204,7 @@
             // labelXScreen
             // 
             this.labelXScreen.AutoSize = true;
-            this.labelXScreen.Location = new System.Drawing.Point(398, 366);
+            this.labelXScreen.Location = new System.Drawing.Point(270, 366);
             this.labelXScreen.Name = "labelXScreen";
             this.labelXScreen.Size = new System.Drawing.Size(20, 13);
             this.labelXScreen.TabIndex = 25;
@@ -197,7 +233,7 @@
             this.videoViewMain.Location = new System.Drawing.Point(3, 38);
             this.videoViewMain.MediaPlayer = null;
             this.videoViewMain.Name = "videoViewMain";
-            this.videoViewMain.Size = new System.Drawing.Size(550, 262);
+            this.videoViewMain.Size = new System.Drawing.Size(440, 262);
             this.videoViewMain.TabIndex = 1;
             this.videoViewMain.Text = "videoViewMain";
             this.videoViewMain.MouseClick += new System.Windows.Forms.MouseEventHandler(this.videoViewMain_MouseClick);
@@ -205,11 +241,13 @@
             // tkBrVolume
             // 
             this.tkBrVolume.AutoSize = false;
-            this.tkBrVolume.Location = new System.Drawing.Point(558, 38);
+            this.tkBrVolume.Location = new System.Drawing.Point(464, 38);
             this.tkBrVolume.Margin = new System.Windows.Forms.Padding(2);
             this.tkBrVolume.Maximum = 100;
             this.tkBrVolume.Name = "tkBrVolume";
             this.tkBrVolume.Orientation = System.Windows.Forms.Orientation.Vertical;
+            this.tkBrVolume.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.tkBrVolume.RightToLeftLayout = true;
             this.tkBrVolume.Size = new System.Drawing.Size(32, 262);
             this.tkBrVolume.TabIndex = 20;
             this.tkBrVolume.TickStyle = System.Windows.Forms.TickStyle.None;
@@ -219,7 +257,7 @@
             // btnPause
             // 
             this.btnPause.Image = global::SubtitleExtractor.Properties.Resources.icon_pause_64;
-            this.btnPause.Location = new System.Drawing.Point(290, 367);
+            this.btnPause.Location = new System.Drawing.Point(176, 367);
             this.btnPause.Name = "btnPause";
             this.btnPause.Size = new System.Drawing.Size(60, 40);
             this.btnPause.TabIndex = 23;
@@ -233,7 +271,7 @@
             this.tkBrDuration.Margin = new System.Windows.Forms.Padding(2);
             this.tkBrDuration.Maximum = 100;
             this.tkBrDuration.Name = "tkBrDuration";
-            this.tkBrDuration.Size = new System.Drawing.Size(550, 32);
+            this.tkBrDuration.Size = new System.Drawing.Size(493, 32);
             this.tkBrDuration.TabIndex = 21;
             this.tkBrDuration.TickStyle = System.Windows.Forms.TickStyle.None;
             this.tkBrDuration.Scroll += new System.EventHandler(this.tkBrDuration_Scroll);
@@ -241,7 +279,7 @@
             // btnStart
             // 
             this.btnStart.Image = ((System.Drawing.Image)(resources.GetObject("btnStart.Image")));
-            this.btnStart.Location = new System.Drawing.Point(224, 367);
+            this.btnStart.Location = new System.Drawing.Point(110, 367);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(60, 40);
             this.btnStart.TabIndex = 22;
@@ -256,9 +294,12 @@
             this.textBoxCropHeight.Size = new System.Drawing.Size(52, 20);
             this.textBoxCropHeight.TabIndex = 25;
             this.textBoxCropHeight.Text = "18";
+            this.textBoxCropHeight.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxCropHeight_KeyPress);
             // 
             // panel2
             // 
+            this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel2.Controls.Add(this.trckBarCropHeight);
             this.panel2.Controls.Add(this.trckBarCropWidth);
             this.panel2.Controls.Add(this.buttonTestcrop);
             this.panel2.Controls.Add(this.checkBoxFullWidthCrop);
@@ -275,10 +316,39 @@
             this.panel2.Controls.Add(this.pictureBoxCrop);
             this.panel2.Controls.Add(this.textBoxCropFolder);
             this.panel2.Controls.Add(this.button3);
-            this.panel2.Location = new System.Drawing.Point(617, 42);
+            this.panel2.Location = new System.Drawing.Point(525, 42);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(377, 209);
+            this.panel2.Size = new System.Drawing.Size(416, 260);
             this.panel2.TabIndex = 1;
+            // 
+            // trckBarCropHeight
+            // 
+            this.trckBarCropHeight.AutoSize = false;
+            this.trckBarCropHeight.Location = new System.Drawing.Point(370, 29);
+            this.trckBarCropHeight.Margin = new System.Windows.Forms.Padding(2);
+            this.trckBarCropHeight.Maximum = 100;
+            this.trckBarCropHeight.Name = "trckBarCropHeight";
+            this.trckBarCropHeight.Orientation = System.Windows.Forms.Orientation.Vertical;
+            this.trckBarCropHeight.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.trckBarCropHeight.Size = new System.Drawing.Size(35, 100);
+            this.trckBarCropHeight.TabIndex = 35;
+            this.trckBarCropHeight.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
+            this.trckBarCropHeight.Value = 18;
+            this.trckBarCropHeight.Scroll += new System.EventHandler(this.trckBarCropHeight_Scroll);
+            // 
+            // trckBarCropWidth
+            // 
+            this.trckBarCropWidth.AutoSize = false;
+            this.trckBarCropWidth.Location = new System.Drawing.Point(2, 134);
+            this.trckBarCropWidth.Margin = new System.Windows.Forms.Padding(2);
+            this.trckBarCropWidth.Maximum = 100;
+            this.trckBarCropWidth.Name = "trckBarCropWidth";
+            this.trckBarCropWidth.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.trckBarCropWidth.Size = new System.Drawing.Size(373, 24);
+            this.trckBarCropWidth.TabIndex = 30;
+            this.trckBarCropWidth.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
+            this.trckBarCropWidth.Value = 100;
+            this.trckBarCropWidth.Scroll += new System.EventHandler(this.trckBarCropWidth_Scroll);
             // 
             // buttonTestcrop
             // 
@@ -326,6 +396,7 @@
             this.textBoxCropWidth.Size = new System.Drawing.Size(52, 20);
             this.textBoxCropWidth.TabIndex = 31;
             this.textBoxCropWidth.Text = "100";
+            this.textBoxCropWidth.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxCropWidth_KeyPress);
             // 
             // label9
             // 
@@ -352,6 +423,7 @@
             this.textBoxCropY.Size = new System.Drawing.Size(52, 20);
             this.textBoxCropY.TabIndex = 28;
             this.textBoxCropY.Text = "82";
+            this.textBoxCropY.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxCropY_KeyPress);
             // 
             // textBoxCropX
             // 
@@ -360,6 +432,7 @@
             this.textBoxCropX.Size = new System.Drawing.Size(52, 20);
             this.textBoxCropX.TabIndex = 27;
             this.textBoxCropX.Text = "0";
+            this.textBoxCropX.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxCropX_KeyPress);
             // 
             // label7
             // 
@@ -381,13 +454,15 @@
             // 
             // pictureBoxCrop
             // 
-            this.pictureBoxCrop.BackgroundImage = global::SubtitleExtractor.Properties.Resources.crop_edit_interface_snniping_tool_cropping_reduce_64;
             this.pictureBoxCrop.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.pictureBoxCrop.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBoxCrop.Location = new System.Drawing.Point(15, 29);
             this.pictureBoxCrop.Name = "pictureBoxCrop";
             this.pictureBoxCrop.Size = new System.Drawing.Size(350, 100);
             this.pictureBoxCrop.TabIndex = 4;
             this.pictureBoxCrop.TabStop = false;
+            this.pictureBoxCrop.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBoxCrop_Paint);
+            this.pictureBoxCrop.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBoxCrop_MouseDown);
             // 
             // textBoxCropFolder
             // 
@@ -408,44 +483,94 @@
             // 
             // panel3
             // 
+            this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel3.Controls.Add(this.label12);
+            this.panel3.Controls.Add(this.textBoxProject);
+            this.panel3.Controls.Add(this.label11);
+            this.panel3.Controls.Add(this.richTextBoxAuthKey);
+            this.panel3.Controls.Add(this.radioButtonGoogleCloudAIOCR);
             this.panel3.Controls.Add(this.radioButtonEasyOCR);
             this.panel3.Controls.Add(this.radioButtonTesseract);
             this.panel3.Controls.Add(this.label5);
             this.panel3.Controls.Add(this.pictureBoxOCR);
             this.panel3.Controls.Add(this.textBoxOCR);
             this.panel3.Controls.Add(this.button2);
-            this.panel3.Location = new System.Drawing.Point(1000, 42);
+            this.panel3.Location = new System.Drawing.Point(953, 42);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(377, 209);
+            this.panel3.Size = new System.Drawing.Size(332, 260);
             this.panel3.TabIndex = 1;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(5, 185);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(40, 13);
+            this.label12.TabIndex = 21;
+            this.label12.Text = "Project";
+            this.label12.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // textBoxProject
+            // 
+            this.textBoxProject.Location = new System.Drawing.Point(51, 182);
+            this.textBoxProject.Name = "textBoxProject";
+            this.textBoxProject.Size = new System.Drawing.Size(143, 20);
+            this.textBoxProject.TabIndex = 20;
+            this.textBoxProject.Text = "nodejs-deploy-406708";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(16, 208);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(29, 13);
+            this.label11.TabIndex = 19;
+            this.label11.Text = "Auth";
+            // 
+            // richTextBoxAuthKey
+            // 
+            this.richTextBoxAuthKey.Location = new System.Drawing.Point(51, 208);
+            this.richTextBoxAuthKey.Name = "richTextBoxAuthKey";
+            this.richTextBoxAuthKey.Size = new System.Drawing.Size(268, 47);
+            this.richTextBoxAuthKey.TabIndex = 18;
+            this.richTextBoxAuthKey.Text = "";
+            // 
+            // radioButtonGoogleCloudAIOCR
+            // 
+            this.radioButtonGoogleCloudAIOCR.AutoSize = true;
+            this.radioButtonGoogleCloudAIOCR.Checked = true;
+            this.radioButtonGoogleCloudAIOCR.Location = new System.Drawing.Point(200, 183);
+            this.radioButtonGoogleCloudAIOCR.Name = "radioButtonGoogleCloudAIOCR";
+            this.radioButtonGoogleCloudAIOCR.Size = new System.Drawing.Size(119, 17);
+            this.radioButtonGoogleCloudAIOCR.TabIndex = 17;
+            this.radioButtonGoogleCloudAIOCR.TabStop = true;
+            this.radioButtonGoogleCloudAIOCR.Text = "GoogleCloudAIOCR";
+            this.radioButtonGoogleCloudAIOCR.UseVisualStyleBackColor = true;
             // 
             // radioButtonEasyOCR
             // 
             this.radioButtonEasyOCR.AutoSize = true;
-            this.radioButtonEasyOCR.Checked = true;
-            this.radioButtonEasyOCR.Location = new System.Drawing.Point(208, 136);
+            this.radioButtonEasyOCR.Location = new System.Drawing.Point(248, 142);
             this.radioButtonEasyOCR.Name = "radioButtonEasyOCR";
             this.radioButtonEasyOCR.Size = new System.Drawing.Size(71, 17);
             this.radioButtonEasyOCR.TabIndex = 16;
-            this.radioButtonEasyOCR.TabStop = true;
             this.radioButtonEasyOCR.Text = "EasyOCR";
             this.radioButtonEasyOCR.UseVisualStyleBackColor = true;
             // 
             // radioButtonTesseract
             // 
             this.radioButtonTesseract.AutoSize = true;
-            this.radioButtonTesseract.Location = new System.Drawing.Point(208, 153);
+            this.radioButtonTesseract.Location = new System.Drawing.Point(248, 159);
             this.radioButtonTesseract.Name = "radioButtonTesseract";
             this.radioButtonTesseract.Size = new System.Drawing.Size(72, 17);
             this.radioButtonTesseract.TabIndex = 15;
-            this.radioButtonTesseract.TabStop = true;
             this.radioButtonTesseract.Text = "Tesseract";
             this.radioButtonTesseract.UseVisualStyleBackColor = true;
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(12, 7);
+            this.label5.Location = new System.Drawing.Point(4, 6);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(34, 13);
             this.label5.TabIndex = 14;
@@ -455,24 +580,24 @@
             // 
             this.pictureBoxOCR.BackgroundImage = global::SubtitleExtractor.Properties.Resources.document_scanning_QR_code_barcode_OCR_image_scanning__64;
             this.pictureBoxOCR.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.pictureBoxOCR.Location = new System.Drawing.Point(15, 29);
+            this.pictureBoxOCR.Location = new System.Drawing.Point(7, 29);
             this.pictureBoxOCR.Name = "pictureBoxOCR";
-            this.pictureBoxOCR.Size = new System.Drawing.Size(350, 100);
+            this.pictureBoxOCR.Size = new System.Drawing.Size(322, 100);
             this.pictureBoxOCR.TabIndex = 5;
             this.pictureBoxOCR.TabStop = false;
             // 
             // textBoxOCR
             // 
-            this.textBoxOCR.Location = new System.Drawing.Point(52, 3);
+            this.textBoxOCR.Location = new System.Drawing.Point(44, 3);
             this.textBoxOCR.Name = "textBoxOCR";
-            this.textBoxOCR.Size = new System.Drawing.Size(313, 20);
+            this.textBoxOCR.Size = new System.Drawing.Size(285, 20);
             this.textBoxOCR.TabIndex = 4;
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(15, 135);
+            this.button2.Location = new System.Drawing.Point(7, 141);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(187, 35);
+            this.button2.Size = new System.Drawing.Size(235, 35);
             this.button2.TabIndex = 1;
             this.button2.Text = "OCR";
             this.button2.UseVisualStyleBackColor = true;
@@ -482,7 +607,7 @@
             // 
             this.richTextBoxStatus.Location = new System.Drawing.Point(12, 466);
             this.richTextBoxStatus.Name = "richTextBoxStatus";
-            this.richTextBoxStatus.Size = new System.Drawing.Size(599, 110);
+            this.richTextBoxStatus.Size = new System.Drawing.Size(507, 161);
             this.richTextBoxStatus.TabIndex = 3;
             this.richTextBoxStatus.Text = "";
             this.richTextBoxStatus.TextChanged += new System.EventHandler(this.richTextBoxStatus_TextChanged);
@@ -498,9 +623,9 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripProgressBar1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 583);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 630);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1389, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1295, 22);
             this.statusStrip1.TabIndex = 4;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -520,10 +645,11 @@
             this.toolStripButton2,
             this.toolStripButton3,
             this.toolStripButton4,
-            this.toolStripButton12});
+            this.toolStripButton12,
+            this.toolStripButton5});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1389, 39);
+            this.toolStrip1.Size = new System.Drawing.Size(1295, 39);
             this.toolStrip1.TabIndex = 6;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -591,8 +717,18 @@
             this.toolStripButton12.Text = "Refresh";
             this.toolStripButton12.Click += new System.EventHandler(this.toolStripButton12_Click);
             // 
+            // toolStripButton5
+            // 
+            this.toolStripButton5.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton5.Image")));
+            this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton5.Name = "toolStripButton5";
+            this.toolStripButton5.Size = new System.Drawing.Size(64, 36);
+            this.toolStripButton5.Text = "Test";
+            this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
+            // 
             // panel4
             // 
+            this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel4.Controls.Add(this.labelGrayScaleTestID);
             this.panel4.Controls.Add(this.buttonQuickTestOCR);
             this.panel4.Controls.Add(this.buttonShuffle);
@@ -602,28 +738,27 @@
             this.panel4.Controls.Add(this.labelGrayscaleName);
             this.panel4.Controls.Add(this.checkBoxThreshhold);
             this.panel4.Controls.Add(this.checkBoxGrayscale);
-            this.panel4.Controls.Add(this.label1);
             this.panel4.Controls.Add(this.textBoxGrayScaleOutput);
             this.panel4.Controls.Add(this.pictureBoxGrayscale);
             this.panel4.Controls.Add(this.textBoxGrayScaleInput);
             this.panel4.Controls.Add(this.buttonGrayscale);
-            this.panel4.Location = new System.Drawing.Point(617, 257);
+            this.panel4.Location = new System.Drawing.Point(525, 308);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(760, 319);
+            this.panel4.Size = new System.Drawing.Size(416, 319);
             this.panel4.TabIndex = 5;
             // 
             // labelGrayScaleTestID
             // 
             this.labelGrayScaleTestID.Font = new System.Drawing.Font("Arial Narrow", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelGrayScaleTestID.Location = new System.Drawing.Point(287, 8);
+            this.labelGrayScaleTestID.Location = new System.Drawing.Point(206, 9);
             this.labelGrayScaleTestID.Name = "labelGrayScaleTestID";
-            this.labelGrayScaleTestID.Size = new System.Drawing.Size(184, 18);
+            this.labelGrayScaleTestID.Size = new System.Drawing.Size(118, 18);
             this.labelGrayScaleTestID.TabIndex = 17;
             this.labelGrayScaleTestID.Text = "None";
             // 
             // buttonQuickTestOCR
             // 
-            this.buttonQuickTestOCR.Location = new System.Drawing.Point(209, 290);
+            this.buttonQuickTestOCR.Location = new System.Drawing.Point(297, 291);
             this.buttonQuickTestOCR.Name = "buttonQuickTestOCR";
             this.buttonQuickTestOCR.Size = new System.Drawing.Size(108, 23);
             this.buttonQuickTestOCR.TabIndex = 16;
@@ -633,7 +768,7 @@
             // 
             // buttonShuffle
             // 
-            this.buttonShuffle.Location = new System.Drawing.Point(242, 261);
+            this.buttonShuffle.Location = new System.Drawing.Point(330, 262);
             this.buttonShuffle.Name = "buttonShuffle";
             this.buttonShuffle.Size = new System.Drawing.Size(75, 23);
             this.buttonShuffle.TabIndex = 15;
@@ -662,7 +797,7 @@
             // checkBoxNail
             // 
             this.checkBoxNail.AutoSize = true;
-            this.checkBoxNail.Location = new System.Drawing.Point(201, 9);
+            this.checkBoxNail.Location = new System.Drawing.Point(120, 10);
             this.checkBoxNail.Name = "checkBoxNail";
             this.checkBoxNail.Size = new System.Drawing.Size(80, 17);
             this.checkBoxNail.TabIndex = 12;
@@ -674,7 +809,7 @@
             this.labelGrayscaleName.Font = new System.Drawing.Font("Arial Narrow", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelGrayscaleName.Location = new System.Drawing.Point(8, 8);
             this.labelGrayscaleName.Name = "labelGrayscaleName";
-            this.labelGrayscaleName.Size = new System.Drawing.Size(184, 18);
+            this.labelGrayscaleName.Size = new System.Drawing.Size(97, 18);
             this.labelGrayscaleName.TabIndex = 11;
             this.labelGrayscaleName.Text = "None";
             // 
@@ -700,20 +835,11 @@
             this.checkBoxGrayscale.UseVisualStyleBackColor = true;
             this.checkBoxGrayscale.CheckedChanged += new System.EventHandler(this.checkBoxGrayscale_CheckedChanged);
             // 
-            // label1
-            // 
-            this.label1.Font = new System.Drawing.Font("Arial Narrow", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(481, 220);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(267, 93);
-            this.label1.TabIndex = 8;
-            this.label1.Text = resources.GetString("label1.Text");
-            // 
             // textBoxGrayScaleOutput
             // 
             this.textBoxGrayScaleOutput.Location = new System.Drawing.Point(56, 194);
             this.textBoxGrayScaleOutput.Name = "textBoxGrayScaleOutput";
-            this.textBoxGrayScaleOutput.Size = new System.Drawing.Size(692, 20);
+            this.textBoxGrayScaleOutput.Size = new System.Drawing.Size(349, 20);
             this.textBoxGrayScaleOutput.TabIndex = 7;
             // 
             // pictureBoxGrayscale
@@ -722,7 +848,7 @@
             this.pictureBoxGrayscale.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.pictureBoxGrayscale.Location = new System.Drawing.Point(8, 56);
             this.pictureBoxGrayscale.Name = "pictureBoxGrayscale";
-            this.pictureBoxGrayscale.Size = new System.Drawing.Size(740, 132);
+            this.pictureBoxGrayscale.Size = new System.Drawing.Size(397, 132);
             this.pictureBoxGrayscale.TabIndex = 4;
             this.pictureBoxGrayscale.TabStop = false;
             // 
@@ -730,37 +856,51 @@
             // 
             this.textBoxGrayScaleInput.Location = new System.Drawing.Point(56, 30);
             this.textBoxGrayScaleInput.Name = "textBoxGrayScaleInput";
-            this.textBoxGrayScaleInput.Size = new System.Drawing.Size(692, 20);
+            this.textBoxGrayScaleInput.Size = new System.Drawing.Size(349, 20);
             this.textBoxGrayScaleInput.TabIndex = 3;
             // 
             // buttonGrayscale
             // 
             this.buttonGrayscale.Location = new System.Drawing.Point(8, 220);
             this.buttonGrayscale.Name = "buttonGrayscale";
-            this.buttonGrayscale.Size = new System.Drawing.Size(309, 35);
+            this.buttonGrayscale.Size = new System.Drawing.Size(397, 35);
             this.buttonGrayscale.TabIndex = 2;
             this.buttonGrayscale.Text = "Grayscale";
             this.buttonGrayscale.UseVisualStyleBackColor = true;
             this.buttonGrayscale.Click += new System.EventHandler(this.button1_Click);
             // 
-            // trckBarCropWidth
+            // panel6
             // 
-            this.trckBarCropWidth.AutoSize = false;
-            this.trckBarCropWidth.Location = new System.Drawing.Point(2, 134);
-            this.trckBarCropWidth.Margin = new System.Windows.Forms.Padding(2);
-            this.trckBarCropWidth.Maximum = 100;
-            this.trckBarCropWidth.Name = "trckBarCropWidth";
-            this.trckBarCropWidth.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.trckBarCropWidth.Size = new System.Drawing.Size(373, 24);
-            this.trckBarCropWidth.TabIndex = 30;
-            this.trckBarCropWidth.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
-            this.trckBarCropWidth.Scroll += new System.EventHandler(this.trckBarCropWidth_Scroll);
+            this.panel6.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel6.Controls.Add(this.treeViewLog);
+            this.panel6.Controls.Add(this.label16);
+            this.panel6.Location = new System.Drawing.Point(953, 308);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(332, 319);
+            this.panel6.TabIndex = 22;
+            // 
+            // treeViewLog
+            // 
+            this.treeViewLog.Location = new System.Drawing.Point(7, 31);
+            this.treeViewLog.Name = "treeViewLog";
+            this.treeViewLog.Size = new System.Drawing.Size(312, 283);
+            this.treeViewLog.TabIndex = 1;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(5, 8);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(41, 13);
+            this.label16.TabIndex = 0;
+            this.label16.Text = "Lịch sử";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1389, 605);
+            this.ClientSize = new System.Drawing.Size(1295, 652);
+            this.Controls.Add(this.panel6);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.statusStrip1);
@@ -780,6 +920,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.tkBrDuration)).EndInit();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trckBarCropHeight)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trckBarCropWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxCrop)).EndInit();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
@@ -791,7 +933,8 @@
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxGrayscale)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trckBarCropWidth)).EndInit();
+            this.panel6.ResumeLayout(false);
+            this.panel6.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -828,7 +971,6 @@
         private System.Windows.Forms.PictureBox pictureBoxCrop;
         private System.Windows.Forms.PictureBox pictureBoxOCR;
         private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBoxGrayScaleOutput;
         private System.Windows.Forms.PictureBox pictureBoxGrayscale;
         private System.Windows.Forms.TextBox textBoxGrayScaleInput;
@@ -864,6 +1006,19 @@
         private System.Windows.Forms.Button buttonTestcrop;
         private System.Windows.Forms.PictureBox pictureBoxLoading;
         private System.Windows.Forms.TrackBar trckBarCropWidth;
+        private System.Windows.Forms.TrackBar trckBarCropHeight;
+        private System.Windows.Forms.Label labelYPercentScreen;
+        private System.Windows.Forms.Label labelXPercentScreen;
+        private System.Windows.Forms.RadioButton radioButtonGoogleCloudAIOCR;
+        private System.Windows.Forms.ToolStripButton toolStripButton5;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TextBox textBoxProject;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.RichTextBox richTextBoxAuthKey;
+        private System.Windows.Forms.ToolTip toolTipGrayscale;
+        private System.Windows.Forms.Panel panel6;
+        private System.Windows.Forms.TreeView treeViewLog;
+        private System.Windows.Forms.Label label16;
     }
 }
 

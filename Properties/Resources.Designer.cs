@@ -173,6 +173,16 @@ namespace SubtitleExtractor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap out0000123 {
+            get {
+                object obj = ResourceManager.GetObject("out0000123", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Paste_26994 {
             get {
                 object obj = ResourceManager.GetObject("Paste_26994", resourceCulture);

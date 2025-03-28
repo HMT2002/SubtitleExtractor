@@ -142,6 +142,9 @@
   <data name="document_scanning_QR_code_barcode_OCR_image_scanning_-64" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\document_scanning_QR_code_barcode_OCR_image_scanning_-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="1398911_correct_mark_success_tick_valid_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\1398911_correct_mark_success_tick_valid_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="698831" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\698831.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -163,7 +166,7 @@
   <data name="i24_photoedit_shadows-64" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\i24_photoedit_shadows-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="1398911_correct_mark_success_tick_valid_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\1398911_correct_mark_success_tick_valid_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="out0000123" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\out0000123.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

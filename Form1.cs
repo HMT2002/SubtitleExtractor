@@ -3,11 +3,16 @@ using AForge.Imaging.Filters;
 using Emgu.CV;
 using Emgu.CV.Flann;
 using Emgu.CV.ImgHash;
+using Emgu.CV.ML;
 using Emgu.CV.Structure;
 using Emgu.CV.XFeatures2D;
+using Emgu.Util.TypeEnum;
 using FFMpegCore;
 using LibVLCSharp.Shared;
 using LibVLCSharp.WinForms;
+using Microsoft.Win32;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -23,11 +28,14 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.Remoting.Messaging;
+using System.Security.Policy;
 using System.Text;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
 using System.Xml.Linq;
 using Tesseract;
 using static System.Net.Mime.MediaTypeNames;
@@ -144,7 +152,7 @@ namespace SubtitleExtractor
             }
         }
 
-        public void ExtractScreenshot(string filename, int shotNumberPerSecond)
+        public string ExtractScreenshot(string filename, int shotNumberPerSecond)
         {
             string fileID = RandomString(5);
             string folderpath = System.Windows.Forms.Application.StartupPath + @"\_extract_" + fileID;
@@ -160,12 +168,12 @@ namespace SubtitleExtractor
             //{
             //    Clipboard.SetText(strParam);
             //}
-            Console.WriteLine(strParam);   
+            Console.WriteLine(strParam);
             richTextBoxStatus.Text += "\nStart extracting...\n";
             pictureBoxLoading.Image = Properties.Resources.loading_gif;
             pictureBoxLoading.Refresh();
             process(strParam);
-
+            return fileID;
         }
 
         public void ExtractScreenshotFFMPEGCore(string inputfilename, string outputfolder, int shotNumberPerSecond)
@@ -514,7 +522,7 @@ namespace SubtitleExtractor
             string res = "";
             try
             {
-                using (var engine = new TesseractEngine("./tessdata", "eng", EngineMode.Default))
+                using (var engine = new TesseractEngine("./tessdata", "vie", EngineMode.Default))
                 {
                     using (var page = engine.Process(b, PageSegMode.Auto))
                         res = page.GetText();
@@ -568,84 +576,296 @@ namespace SubtitleExtractor
         }
         private void button1_Click(object sender, EventArgs e)
         {
+            GrayscaleProc();
+        }
+
+        public void GrayscaleProc()
+        {
             if (textBoxGrayScaleInput.Text.CompareTo("") == 0)
             {
                 return;
             }
-
-
-            string folderOutput = textBoxGrayScaleInput.Text;
-
+            string grayscaleInput = textBoxGrayScaleInput.Text;
+            string job = "";
             bool useSISThreshHold = checkBoxThreshhold.Checked;
             bool useGrayscale = checkBoxGrayscale.Checked;
+
             if (!useGrayscale && !useSISThreshHold)
             {
                 return;
             }
+
             if (useGrayscale)
             {
-                folderOutput += "_grayscale";
+                job = "grayscale";
             }
             else if (useSISThreshHold)
             {
-                folderOutput += "_sisthreshold";
-
+                job = "sisthreshold";
             }
             else if (useGrayscale && useSISThreshHold)
             {
-                folderOutput += "_grayscale_sisthreshold";
-
+                job= "grayscale_sisthreshold";
             }
+
+            grayscaleInput += "_"+ job;
+            StartGrayscale(grayscaleInput);
+            AddToXMLAndToTreeView(fileID, job, grayscaleInput);
+        }
+
+        public void StartGrayscale(string grayScaleInput = "")
+        {
             pictureBoxLoading.Image = Properties.Resources.loading_gif;
             pictureBoxLoading.Refresh();
             Thread t = new Thread(() =>
             {
-                GrayScaleFolder(textBoxGrayScaleInput.Text, folderOutput);
-                textBoxGrayScaleOutput.Text = folderOutput;
-                textBoxOCR.Text = folderOutput;
+                GrayScaleFolder(textBoxGrayScaleInput.Text, grayScaleInput);
+                textBoxGrayScaleOutput.Text = grayScaleInput;
+                textBoxOCR.Text = grayScaleInput;
                 pictureBoxLoading.Image = Properties.Resources._1398911_correct_mark_success_tick_valid_icon;
                 pictureBoxLoading.Refresh();
             });
             t.Start();
+        }
+
+
+        public CrawlWorker worker = CrawlWorker.Ins;
+        static System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
+
+        // đây là overloading, cùng tên khác tham số
+        //overriding là kề thừa từ lớp cha, cùng tên, cùng tham số, cùng kiểu dữ liệu trả về
+        public async Task<string> SendGoogleOCRRequest(string filename = "", string project_id = "", string auth_key = "")
+        {
+            string text = "";
+            string res = @"
+        {
+            ""responses"": {
+                ""textAnnotations"": [],
+                ""fullTextAnnotation"":{
+                    ""pages"":[],
+                    ""text"":""""
+                }
+            }
+        }";
+            try
+            {
+                /*
+                Request body sample
+
+                {
+                  "requests": [
+                    {
+                      "image": {
+                        "content": "base64image"
+                      },
+                      "features": [
+                        {
+                          "type": "TEXT_DETECTION"
+                        }
+                      ]
+                    }
+                  ]
+                }
+
+                 */
+                var resquestBody = new JsonObject();
+                var requestsArray = new JsonArray();
+                var requestsObject = new JsonObject();
+                var imageJson = new JsonObject();
+                var base64Image = Helper.Ins.ImageFromFileToBase64(filename);
+                imageJson.Add("content", base64Image);
+                var featuresJson = new JsonObject();
+                var featuresArray = new JsonArray();
+                var feature = new JsonObject();
+                feature.Add("type", "TEXT_DETECTION");
+                featuresArray.Add(feature);
+                requestsObject.Add("image", imageJson);
+                requestsObject.Add("features", featuresArray);
+                requestsArray.Add(requestsObject);
+                resquestBody.Add("requests", requestsArray);
+                var content = new System.Net.Http.StringContent(resquestBody.ToString(), Encoding.UTF8, "application/json"); ;
+
+                //get gcloud token
+                //gcloud auth print-access-token 
+                var httpRequestMessage = new System.Net.Http.HttpRequestMessage
+                {
+                    Method = System.Net.Http.HttpMethod.Post,
+                    RequestUri = new Uri($"https://vision.googleapis.com/v1/images:annotate"),
+                    Headers = {
+            { System.Net.HttpRequestHeader.Authorization.ToString(), "Bearer "+ auth_key},
+            { System.Net.HttpRequestHeader.ContentType.ToString(), "application/json; charset=utf-8" },
+            { "x-goog-user-project", project_id },
+            //"nodejs-deploy-406708"
+        },
+                    Content = content
+                };
+                System.Net.Http.HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
+                response.EnsureSuccessStatusCode();
+
+                // Deserialize the updated product from the response body.
+                res = await response.Content.ReadAsStringAsync();
 
 
 
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            try
+            {
+                JObject obj = JObject.Parse(res);
+                if (obj["responses"][0]["fullTextAnnotation"] != null)
+                {
+                    JToken token = obj["responses"][0]["fullTextAnnotation"]["text"];
+                    text = token.ToString();
+                    richTextBoxStatus.Text += "\n " + text + "\n";
+                    Console.WriteLine(token.Path + " -> " + text);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return text;
+        }
+
+
+        public async void SendGoogleOCRRequest()
+        {
+            try
+            {
+                /*
+                Request body sample
+
+                {
+                  "requests": [
+                    {
+                      "image": {
+                        "content": "base64image"
+                      },
+                      "features": [
+                        {
+                          "type": "TEXT_DETECTION"
+                        }
+                      ]
+                    }
+                  ]
+                }
+
+                 */
+                var resquestBody = new JsonObject();
+                var requestsArray = new JsonArray();
+                var requestsObject = new JsonObject();
+                var imageJson = new JsonObject();
+                var base64Image = Helper.Ins.ImageFromTestToBase64();
+                imageJson.Add("content", base64Image);
+                var featuresJson = new JsonObject();
+                var featuresArray = new JsonArray();
+                var feature = new JsonObject();
+                feature.Add("type", "TEXT_DETECTION");
+                featuresArray.Add(feature);
+                requestsObject.Add("image", imageJson);
+                requestsObject.Add("features", featuresArray);
+                requestsArray.Add(requestsObject);
+                resquestBody.Add("requests", requestsArray);
+                var content = new System.Net.Http.StringContent(resquestBody.ToString(), Encoding.UTF8, "application/json"); ;
+
+                //get gcloud token
+                //gcloud auth print-access-token 
+                var httpRequestMessage = new System.Net.Http.HttpRequestMessage
+                {
+                    Method = System.Net.Http.HttpMethod.Post,
+                    RequestUri = new Uri($"https://vision.googleapis.com/v1/images:annotate"),
+                    Headers = {
+            { System.Net.HttpRequestHeader.Authorization.ToString(), "Bearer ya29.a0AeXRPp5JeVJQ9eVnExDARs_iTu54Ve1TOrwRJ0OsgQgo427GddbAut1qBzeyR2obtUkYrPt5cSvQE5gxSK-I79wwOOH9xfh-RvDlFf76qlC9JbHM6ulVbJlt833Dskk-005cTJa5FTyC1w62-z38CrV_dMnSeyWURxC0ECxiN7RiJXYaCgYKAToSARMSFQHGX2MiDRMDSNXrtV2y9oYp_QX_7Q0182" },
+            { System.Net.HttpRequestHeader.ContentType.ToString(), "application/json; charset=utf-8" },
+            { "x-goog-user-project", "nodejs-deploy-406708" },
+
+        },
+                    Content = content
+                };
+                System.Net.Http.HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
+                response.EnsureSuccessStatusCode();
+
+                // Deserialize the updated product from the response body.
+                string res = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(response.Content);
+                Console.WriteLine(res);
+
+                JObject json = JObject.Parse(res);
+                richTextBoxStatus.Text += "\n " + res + "\n";
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         private void button2_Click(object sender, EventArgs e)
         {
-            DirectoryInfo input_folder = new DirectoryInfo(System.Windows.Forms.Application.StartupPath + @"\" + textBoxOCR.Text);
+            OCRProc();
+
+        }
+
+        public void OCRProc()
+        {
+            string OCRInput = textBoxOCR.Text;
+            DirectoryInfo input_folder = new DirectoryInfo(System.Windows.Forms.Application.StartupPath + @"\" + OCRInput);
             if (!input_folder.Exists)
             {
                 return;
-            }
+            }                
+            string auth_key = richTextBoxAuthKey.Text;
+            string project_id = textBoxProject.Text;
+            StartOCR(OCRInput, input_folder, auth_key, project_id);
+            
+        }
+
+        private void StartOCR(string OCRInput="", DirectoryInfo input_folder=null, string auth_key="", string project_id="")
+        {
             toolStripProgressBar1.Maximum = input_folder.GetFiles().Length;
             toolStripProgressBar1.Value = 0;
             pictureBoxLoading.Image = Properties.Resources.loading_gif;
             pictureBoxOCR.BackgroundImage = Properties.Resources.loading_gif;
             pictureBoxOCR.Refresh();
             pictureBoxLoading.Refresh();
+            string fullJobName = "";
+            string job = "";
             if (radioButtonEasyOCR.Checked)
             {
                 richTextBoxStatus.Text += "\nStart EasyOCR...\n";
-                StartOCRProc(textBoxOCR.Text);
-
+                StartOCRProc(OCRInput);
+                fullJobName = OCRInput + "_easyocr";
+                job = "easyocr";
             }
-            else if (radioButtonTesseract.Checked)
+            else if (radioButtonGoogleCloudAIOCR.Checked)
             {
                 int step = 0;
                 int index = 1;
-                File.WriteAllText(System.Windows.Forms.Application.StartupPath + @"\" + textBoxOCR.Text + "_tesseract.srt", "");
-                Thread t = new Thread(() =>
+                File.WriteAllText(System.Windows.Forms.Application.StartupPath + @"\" + OCRInput + "_google_vision.srt", "");
+
+                if (auth_key.Equals("") || project_id.Equals(""))
+                {
+                    richTextBoxStatus.Text += "\n" + @"Cần có auth key và project id nếu dùng google api";
+                    return;
+                }
+                Thread t = new Thread(async () =>
                 {
                     foreach (FileInfo file in input_folder.GetFiles())
                     {
-
-                        string result = OCRPic(file.FullName);
-                        if (result.Trim().CompareTo("") != 0)
+                        try
                         {
-                            string formatted = formatSubtitle(result, step, step + (1000 / 2), index);
-                            index++;
-                            File.AppendAllText(System.Windows.Forms.Application.StartupPath + @"\" + textBoxOCR.Text + "_tesseract.srt", formatted);
+                            string result = await SendGoogleOCRRequest(file.FullName, project_id, auth_key);
+                            if (result.Trim().CompareTo("") != 0)
+                            {
+                                string formatted = formatSubtitle(result, step, step + (1000 / 2), index);
+                                index++;
+                                File.AppendAllText(System.Windows.Forms.Application.StartupPath + @"\" + OCRInput + "_google_vision.srt", formatted);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+
                         }
                         step += (1000 / 2);
                         toolStripProgressBar1.PerformStep();
@@ -658,6 +878,40 @@ namespace SubtitleExtractor
 
                 });
                 t.Start();
+
+                fullJobName = OCRInput + "_google_vision";
+                job = "google_vision";
+            }
+            else if (radioButtonTesseract.Checked)
+            {
+                int step = 0;
+                int index = 1;
+                File.WriteAllText(System.Windows.Forms.Application.StartupPath + @"\" + OCRInput + "_tesseract.srt", "");
+                Thread t = new Thread(() =>
+                {
+                    foreach (FileInfo file in input_folder.GetFiles())
+                    {
+
+                        string result = OCRPic(file.FullName);
+                        if (result.Trim().CompareTo("") != 0)
+                        {
+                            string formatted = formatSubtitle(result, step, step + (1000 / 2), index);
+                            index++;
+                            File.AppendAllText(System.Windows.Forms.Application.StartupPath + @"\" + OCRInput + "_tesseract.srt", formatted);
+                        }
+                        step += (1000 / 2);
+                        toolStripProgressBar1.PerformStep();
+                    }
+                    toolStripProgressBar1.Value = 0;
+                    pictureBoxLoading.Image = Properties.Resources._1398911_correct_mark_success_tick_valid_icon;
+                    pictureBoxOCR.BackgroundImage = Properties.Resources._1398911_correct_mark_success_tick_valid_icon;
+                    pictureBoxLoading.Refresh();
+                    pictureBoxOCR.Refresh();
+
+                });
+                t.Start();
+                fullJobName = OCRInput + "_tesseract";
+                job = "tesseract";
             }
             //backgroundWorker1.RunWorkerAsync();//start worker
 
@@ -675,7 +929,10 @@ namespace SubtitleExtractor
             //    //filter.ApplyInPlace(grImage);
             //    SwitchImageHighSpeed(bitmap, pictureBoxOCR, 200);
             //}
+
+            AddToXMLAndToTreeView(fileID, job, fullJobName);
         }
+
         public string formatSubtitle(string text, int timeFrom, int timeTo, int index)
         {
             string formated = "";
@@ -782,6 +1039,11 @@ namespace SubtitleExtractor
         }
         private void buttonShuffle_Click(object sender, EventArgs e)
         {
+            ShuffleProc();
+        }
+
+        public void ShuffleProc()
+        {
             if (textBoxGrayScaleInput.Text.CompareTo("") == 0)
             {
                 return;
@@ -821,6 +1083,7 @@ namespace SubtitleExtractor
             }
             pictureBoxGrayscale.BackgroundImage = bitmap;
             pictureBoxGrayscale.Refresh();
+            bitmap.Dispose();
         }
         private void buttonQuickTestOCR_Click(object sender, EventArgs e)
         {
@@ -904,28 +1167,36 @@ namespace SubtitleExtractor
         }
         private void button3_Click(object sender, EventArgs e)
         {
-            string source_folder = textBoxCropFolder.Text;
-            if (source_folder.CompareTo("") == 0)
+            
+
+        }
+        public void CropProc()
+        {
+            string cropInput = textBoxCropFolder.Text;
+            if (cropInput.CompareTo("") == 0)
             {
                 return;
             }
+            string folder_path = System.Windows.Forms.Application.StartupPath + @"\" + cropInput;
+            DirectoryInfo input_folder = new DirectoryInfo(folder_path);
+            if (!input_folder.Exists)
+            {
+                MessageBox.Show("Not found pictures path: " + folder_path);
+                return;
+            }
+            string folder_cropped_path = System.Windows.Forms.Application.StartupPath + @"\" + cropInput + "_cropped";
+            if (!File.Exists(folder_cropped_path))
+            {
+                System.IO.Directory.CreateDirectory(folder_cropped_path);
+            }
 
+            StartCropped(cropInput);
+        }
+
+        public void StartCropped(string cropInput = "", DirectoryInfo input_folder=null)
+        {
             try
             {
-                string folder_path = System.Windows.Forms.Application.StartupPath + @"\" + source_folder;
-                DirectoryInfo input_folder = new DirectoryInfo(folder_path);
-
-                if (!input_folder.Exists)
-                {
-                    MessageBox.Show("Not found pictures path: " + folder_path);
-                    return;
-                }
-
-                string folder_cropped_path = System.Windows.Forms.Application.StartupPath + @"\" + source_folder + "_cropped";
-                if (!File.Exists(folder_cropped_path))
-                {
-                    System.IO.Directory.CreateDirectory(folder_cropped_path);
-                }
                 //DirectoryInfo di = Directory.CreateDirectory(folder_cropped_path);
 
                 // Delete the directory.
@@ -942,12 +1213,12 @@ namespace SubtitleExtractor
                     int index = 0;
                     foreach (FileInfo file in input_folder.GetFiles())
                     {
-                        CropPic(file.FullName, source_folder + @"_cropped\" + file.Name);
+                        CropPic(file.FullName, cropInput + @"_cropped\" + file.Name);
                         index++;
                         toolStripProgressBar1.PerformStep();
                     }
-                    textBoxOCR.Text = source_folder + @"_cropped";
-                    textBoxGrayScaleInput.Text = source_folder + @"_cropped";
+                    textBoxOCR.Text = cropInput + @"_cropped";
+                    textBoxGrayScaleInput.Text = cropInput + @"_cropped";
                     toolStripProgressBar1.Value = 0;
 
                     pictureBoxLoading.Image = Properties.Resources._1398911_correct_mark_success_tick_valid_icon;
@@ -955,13 +1226,13 @@ namespace SubtitleExtractor
                 });
                 t.Start();
 
+                AddToXMLAndToTreeView(fileID, "cropped", cropInput + "_cropped");
+
             }
             catch (Exception ex)
             {
                 Console.WriteLine("The process failed: {0}", ex.Message);
             }
-
-
         }
 
         private void toolStripButton12_Click(object sender, EventArgs e)
@@ -1013,6 +1284,163 @@ namespace SubtitleExtractor
         private void Form1_Load(object sender, EventArgs e)
         {
             initPlayer();
+
+            initToolTip();
+
+            initTreviewLog();
+        }
+        public static string LogFileName = System.Windows.Forms.Application.StartupPath + "//log.xml";
+        public XDocument xml = null;
+        public void WriteToXMLLogFile(string filename)
+        {
+            xml.Save(filename);
+        }
+
+        public void ReadXMLLogFile(string filename)
+        {
+            if (!File.Exists(filename))
+            {
+                File.WriteAllText(filename, @"<?xml version=""1.0""?>
+                    <!-- This is a sample XML document -->
+                    <!DOCTYPE Items [<!ENTITY number ""123"">]>
+                    <Logs>
+                      <Log SessionName="""">
+                        <Extract></Extract>
+                        <Crop></Crop>
+                        <Crop_GrayScale></Crop_GrayScale>
+                      </Log>
+                    </Logs>");
+                return;
+            }
+            try
+            {
+                xml = XDocument.Load(filename);
+                foreach (XElement c in xml.Descendants("Logs"))
+                {
+                    foreach (XElement t in xml.Descendants("Log"))
+                    {
+                        TreeNode node = ReadXMLAndGenerateTreeNode(t);
+                        treeViewLog.Nodes.Add(node);
+                    }
+
+                }
+                //Console.WriteLine(xml.Descendants("Logs").First().Element("Log").Element("SessionName").Value);
+
+            }
+            catch { }
+            finally
+            {
+                if (xml != null)
+                {
+
+                }
+            }
+
+        }
+
+        private void initTreviewLog()
+        {
+            //treeViewLog.Nodes.Clear();
+            //TreeNode treeNode = new TreeNode() { Text = "Test" };
+            //TreeNode treeChild = new TreeNode() { Text = "Test2" };
+            //AddTreeNodeToParentTreeNode(treeChild, treeNode);
+            //treeViewLog.Nodes.Add(treeNode);
+
+            
+
+            ReadXMLLogFile(LogFileName);
+            treeViewLog.AfterSelect += TreeViewLog_AfterSelect;
+
+        }
+
+        private void TreeViewLog_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            var fullNodePath = e.Node.FullPath;
+            var selectedNode = e.Node;
+            XElement xElement = null;
+
+            try
+            {
+                var parentNode= selectedNode.Parent;
+                if(parentNode != null)
+                {
+                    var parentXML=parentNode.Tag as XElement;
+                    fileID=parentXML.Attribute("SessionName").Value.ToString();
+
+                }
+                else
+                {
+                    var selectedXML=selectedNode.Tag as XElement;
+                    fileID = selectedXML.Attribute("SessionName").Value.ToString();
+                }
+
+                
+                xElement=selectedNode.Tag as XElement;
+                if(xElement == null)
+                {
+                    return;
+                }
+                string xmlValue = xElement.Value.ToString();
+                string xmlName=xElement.Name.ToString();
+
+                //textBoxOCR.Text = xmlValue;
+                //switch (xmlName)
+                //{
+
+                //    case "":
+
+                //        break;
+
+                //    case "extract":
+                //        textBoxCropFolder.Text= xmlValue;
+                //        break;
+
+                //    default:
+                //        break;
+                //}
+
+                Clipboard.SetText(xmlValue);
+
+            }
+            catch
+            {
+            }
+            finally { }
+        }
+
+        public TreeNode ReadXMLAndGenerateTreeNode(XElement element)
+        {
+            TreeNode treeNode = new TreeNode();
+            if (element != null)
+            {
+
+                if ("Log".Equals(element.Name.ToString()))
+                {
+                    treeNode.Text = element.Attribute("SessionName").Value;
+                    treeNode.Tag = element;
+                }
+                foreach (XElement t in element.Elements())
+                {
+                    
+                    TreeNode child = new TreeNode();
+                    child.Text = t.Value;
+                    child.Tag = t;
+                    AddTreeNodeToParentTreeNode(child, treeNode);
+                    ReadXMLAndGenerateTreeNode(t);
+                }
+
+            }
+            return treeNode;
+        }
+
+        public void AddTreeNodeToParentTreeNode(TreeNode node, TreeNode parent)
+        {
+            parent.Nodes.Add(node);
+        }
+
+        private void initToolTip()
+        {
+            toolTipGrayscale.SetToolTip(buttonGrayscale, "Bạn muốn grayscale ảnh không? Thao tác này giúp giảm tải cho việc OCR bằng cách chuyển màu ảnh thành trắng đen.\r\nNhưng đừng áp dụng đối với những video có font chữ sáng, sẽ bị giảm độ chính xác\r\nVà xin đừng grayscale video Bad Apple, vô nghĩa lắm.\r\nĐối với GoogleOCR, cần thiết lập API auth key, và nên dùng 1k ảnh mỗi tháng thôi.\r\n");
         }
 
         #region player
@@ -1292,15 +1720,58 @@ namespace SubtitleExtractor
             {
                 return;
             }
-            ExtractScreenshot(textBoxExtractFolder.Text, 2);
+            fileID = ExtractScreenshot(textBoxExtractFolder.Text, 2);
 
 
-
+            AddToXMLAndToTreeView(fileID, "extract", "_extract_" + fileID);
 
             //ExtractScreenshotFFMPEGCore(textBoxExtractFolder.Text, folder_cropped_path, 2);
 
 
 
+        }
+        public string fileID = "";
+
+        public void AddToXMLAndToTreeView(string fileID="",string job="",string fullJobName="")
+        {
+            XElement checkXml = xml.Descendants("Logs").Descendants("Log").FirstOrDefault(el => el.Attribute("SessionName") != null && fileID.Equals(el.Attribute("SessionName").Value.ToString()));
+            XElement xmlLog = checkXml != null ? checkXml : new XElement("Log");
+
+            
+            if (checkXml == null) {
+                xmlLog.SetAttributeValue("SessionName", fileID);
+                xml.Element("Logs").AddFirst(xmlLog);
+            }
+
+            XElement logElement = new XElement(job, fullJobName);
+         
+            xmlLog.Add(logElement);
+
+            WriteToXMLLogFile(LogFileName);//save to xml file
+
+
+            TreeNode checkNode = treeViewLog.Nodes.Cast<TreeNode>().Where(r => r.Text.Equals(fileID)).ToArray().FirstOrDefault();
+            TreeNode treeNode = checkNode != null ? checkNode : new TreeNode() { Text = fileID, Tag = xmlLog };
+
+            TreeNode checkJobNode=treeNode.Nodes.Cast<TreeNode>().Where(r => r.Text.Equals(fullJobName)).ToArray().FirstOrDefault();
+            TreeNode jobNode = checkJobNode!=null? checkJobNode : new TreeNode() { Text = fullJobName, Tag = xmlLog };
+
+            if (checkNode == null) { 
+                treeNode.Nodes.Add(jobNode);
+                treeViewLog.Nodes.Add(treeNode);
+            }
+            if (checkJobNode == null)
+            {
+                //dùng Insert thì như dùng Add nhưng có khai báo vị trí thêm vào
+                treeNode.Nodes.Add(jobNode);
+
+            }
+            
+            if (treeNode != null)
+            {
+                Console.WriteLine(treeNode.Tag);
+            }
+            
         }
 
         private void toolStripButton6_Click(object sender, EventArgs e)
@@ -1313,7 +1784,24 @@ namespace SubtitleExtractor
 
         private void videoViewMain_MouseClick(object sender, MouseEventArgs e)
         {
-            GetVideoCropShot(e, videoViewMain);
+            //GetVideoCropShot(e, videoViewMain);
+
+
+
+            double x = videoViewMain.PointToClient(Cursor.Position).X;
+            double y = videoViewMain.PointToClient(Cursor.Position).Y;
+            double videoViewMain_width = videoViewMain.Width;
+            double videoViewMain_height = videoViewMain.Height;
+            double x_percentage = (x / videoViewMain_width) * 100;
+            double y_percentage = (y / videoViewMain_height) * 100;
+
+
+
+            labelXScreen.Text = "X: " + x.ToString();
+            labelYScreen.Text = "Y: " + y.ToString();
+
+            labelXPercentScreen.Text = "%X: " + x_percentage.ToString();
+            labelYPercentScreen.Text = "%Y: " + y_percentage.ToString();
         }
         private const uint Width = 320;
         private const uint Height = 180;
@@ -1368,7 +1856,24 @@ namespace SubtitleExtractor
 
         private void transparentPanelVideo_MouseClick(object sender, MouseEventArgs e)
         {
-            GetVideoCropShot(e, transparentPanelVideo);
+            //GetVideoCropShot(e, transparentPanelVideo);
+
+
+
+            double x = transparentPanelVideo.PointToClient(Cursor.Position).X;
+            double y = transparentPanelVideo.PointToClient(Cursor.Position).Y;
+            double transparentPanelVideo_width = transparentPanelVideo.Width;
+            double transparentPanelVideo_height = transparentPanelVideo.Height;
+            double x_percentage = (x / transparentPanelVideo_width) * 100;
+            double y_percentage = (y / transparentPanelVideo_height) * 100;
+
+
+
+            labelXScreen.Text = "X: " + x.ToString();
+            labelYScreen.Text = "Y: " + y.ToString();
+
+            labelXPercentScreen.Text = "%X: " + x_percentage.ToString();
+            labelYPercentScreen.Text = "%Y: " + y_percentage.ToString();
         }
 
         #endregion
@@ -1421,5 +1926,127 @@ namespace SubtitleExtractor
         {
             textBoxCropWidth.Text = (trckBarCropWidth.Value - Int32.Parse(textBoxCropX.Text)).ToString();
         }
+
+        private void trckBarCropHeight_Scroll(object sender, EventArgs e)
+        {
+            textBoxCropHeight.Text = (trckBarCropHeight.Value).ToString();
+        }
+
+        public void enterNumberOnly(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) &&
+(e.KeyChar != '.'))
+            {
+                e.Handled = true;
+            }
+
+            // only allow one decimal point
+            if ((e.KeyChar == '.') && ((sender as TextBox).Text.IndexOf('.') > -1))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void textBoxCropX_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            enterNumberOnly(sender, e);
+        }
+
+        private void textBoxCropHeight_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            enterNumberOnly(sender, e);
+        }
+
+        private void textBoxCropY_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            enterNumberOnly(sender, e);
+        }
+
+        private void textBoxCropWidth_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            enterNumberOnly(sender, e);
+        }
+
+        private void transparentPnCrop_Paint(object sender, PaintEventArgs e)
+        {
+            base.OnPaint(e);
+            using (Graphics g = e.Graphics)
+            {
+                var p = new Pen(Color.Black, 3);
+                var point1 = new Point(0, 0);
+                var point2 = new Point(50, 0);
+                g.DrawLine(p, point1, point2);
+            }
+        }
+
+        private void pictureBoxCrop_MouseDown(object sender, MouseEventArgs e)
+        {
+            double x = e.Location.X;
+            double y = e.Location.Y;
+            double crop_width = Convert.ToDouble(textBoxCropWidth.Text);
+            double crop_height = Convert.ToDouble(textBoxCropHeight.Text);
+            double picturebox_width = pictureBoxCrop.Width;
+            double picturebox_height = pictureBoxCrop.Height;
+            double x_percentage = (x / picturebox_width) * 100;
+            double y_percentage = (y / picturebox_height) * 100;
+
+            double over_width_percentage = (crop_width + x_percentage) < 100 ? crop_width : 100;
+            double over_height_percentage = (crop_height + y_percentage) < 100 ? crop_height : 100;
+
+            double draw_width = over_width_percentage >= 100 ? picturebox_width * (((100 - x_percentage)) / 100) : picturebox_width * (over_width_percentage / 100);
+            double draw_height = over_height_percentage >= 100 ? picturebox_height * (((100 - y_percentage)) / 100) : picturebox_height * (over_height_percentage / 100);
+
+
+            textBoxCropX.Text = Convert.ToInt32(x_percentage).ToString();
+            textBoxCropY.Text = Convert.ToInt32(y_percentage).ToString();
+
+            if (e.Button == MouseButtons.Left)
+            {
+                startPoint = e.Location;
+                endPoint = new Point(e.Location.X + Convert.ToInt32(x_percentage + draw_width),
+                     +Convert.ToInt32(y_percentage + draw_height));
+                cropRect = new Rectangle();
+                cropRect.X = Convert.ToInt32(e.Location.X);
+                cropRect.Y = Convert.ToInt32(e.Location.Y);
+                cropRect.Width = Convert.ToInt32(draw_width - 2);
+                cropRect.Height = Convert.ToInt32(draw_height - 2);
+
+                //cropRect.X = Convert.ToInt32(pictureBoxCrop.Width-70);
+                //cropRect.Y = Convert.ToInt32(pictureBoxCrop.Height-30);
+                //cropRect.Width = Convert.ToInt32(68);
+                //cropRect.Height = Convert.ToInt32(28);
+
+                ((PictureBox)sender).Invalidate(); // Force final redraw
+            }
+        }
+        private Pen drawPen = new Pen(Color.Black, 2);
+        private Point startPoint;
+        private Point endPoint;
+        private Rectangle cropRect;
+        private void pictureBoxCrop_Paint(object sender, PaintEventArgs e)
+        {
+            // Draw the line on the panel
+            if (startPoint != null)
+            {
+                e.Graphics.DrawRectangle(drawPen, cropRect);
+                //e.Graphics.DrawLine(drawPen, startPoint, endPoint);
+            }
+        }
+
+        private void toolStripButton5_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SendGoogleOCRRequest();
+            }
+            catch (Exception ex)
+            {
+                richTextBoxStatus.Text = ex.Message;
+            }
+
+
+        }
     }
+
+
 }
